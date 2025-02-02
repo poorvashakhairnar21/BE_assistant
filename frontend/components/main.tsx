@@ -21,6 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { login, signup, getChats, updateChats, validateToken } from "@/utils/api"; 
 import { Login } from "@/components/auth/Login";
 import { Signup } from "@/components/auth/Signup";
+import { OceanWaves } from "@/components/OceanWaves.tsx";
 
 interface Message {
   id: number;
@@ -43,6 +44,7 @@ export default function Main() {
   const [editTitle, setEditTitle] = useState("");
   const [showLogin, setShowLogin] = useState(true);
   const [loading, setLoading] = useState(true); // Add loading state
+  const [voiceAi,setVoiceAi]=useState(true);
   
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -220,193 +222,199 @@ export default function Main() {
     );
   }
 
+  if(voiceAi){
     return (
-      <div className="flex h-screen bg-background">
-        {/* Sidebar */}
-        <div className="w-80 border-r bg-card flex flex-col">
-          {/* New Chat Button */}
-          <div className="p-4">
-            <Button
-              className="w-full justify-start gap-2"
-              variant="outline"
-              onClick={createNewChat}
-            >
-              <Plus className="w-4 h-4" />
-              New chat
-            </Button>
-          </div>
-  
-          {/* Chat History */}
-          <ScrollArea className="flex-1 px-2">
-            <div className="space-y-2 p-2">
-              {chats.map((chat) => (
-                <div key={chat.id} className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start gap-2 h-auto py-3 px-3 font-normal hover:bg-muted"
-                    onClick={() => setCurrentChat(chat)}
-                  >
-                    <MessageSquare className="w-4 h-4 shrink-0" />
-                    {isEditing === chat.id ? (
-                      <Input
-                        value={editTitle}
-                        onChange={(e) => setEditTitle(e.target.value)}
-                        onBlur={saveRenamedChat}
-                        onKeyPress={(e) => {
-                          if (e.key === "Enter") saveRenamedChat();
-                        }}
-                        className="w-full"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-start gap-1 overflow-hidden">
-                        <div className="w-full truncate text-sm">
-                          {chat.title}
-                        </div>
-                        <div className="w-full truncate text-xs text-muted-foreground">
-                          {chat.messages[
-                            chat.messages.length - 1
-                          ]?.content.substring(0, 30) || "No messages yet"}
-                        </div>
-                      </div>
-                    )}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRenameChat(chat.id)}
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteChat(chat.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-  
-          {/* Bottom Actions */}
-          <div className="p-4 border-t space-y-2">
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2 text-muted-foreground"
-            >
-              <FolderPlus className="w-4 h-4" />
-              Create folder
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2 text-muted-foreground"
-              onClick={() => {
-                setChats([]);
-                setCurrentChat(null);
-              }}
-            >
-              <Trash2 className="w-4 h-4" />
-              Clear conversations
-            </Button>
-            <Separator />
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2 text-muted-foreground"
-            >
-              <Settings className="w-4 h-4" />
-              Settings
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2 text-muted-foreground"
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
-          </div>
+      <OceanWaves />
+  )
+  }
+
+  return (
+    <div className="flex h-screen bg-background">
+      {/* Sidebar */}
+      <div className="w-80 border-r bg-card flex flex-col">
+        {/* New Chat Button */}
+        <div className="p-4">
+          <Button
+            className="w-full justify-start gap-2"
+            variant="outline"
+            onClick={createNewChat}
+          >
+            <Plus className="w-4 h-4" />
+            New chat
+          </Button>
         </div>
-  
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col">
-          {/* Header */}
-          <header className="border-b p-4 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span className="font-semibold">
-                {currentChat ? currentChat.title : "New Chat"}
-              </span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search messages"
-                  className="pl-8 w-64"
-                />
-              </div>
-              <Button variant="ghost" size="icon">
-                <Lock className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <HelpCircle className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Moon className="h-4 w-4" />
-              </Button>
-              <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white">
-                {user.charAt(0).toUpperCase()}
-              </div>
-            </div>
-          </header>
-  
-          {/* Chat Area */}
-          <main className="flex-1 p-6 overflow-auto">
-            <div className="max-w-3xl mx-auto space-y-4">
-              {currentChat ? (
-                currentChat.messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`max-w-md p-3 rounded-lg ${message.sender === "user" ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-800"}`}
-                    >
-                      {message.content}
+
+        {/* Chat History */}
+        <ScrollArea className="flex-1 px-2">
+          <div className="space-y-2 p-2">
+            {chats.map((chat) => (
+              <div key={chat.id} className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 h-auto py-3 px-3 font-normal hover:bg-muted"
+                  onClick={() => setCurrentChat(chat)}
+                >
+                  <MessageSquare className="w-4 h-4 shrink-0" />
+                  {isEditing === chat.id ? (
+                    <Input
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      onBlur={saveRenamedChat}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") saveRenamedChat();
+                      }}
+                      className="w-full"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-start gap-1 overflow-hidden">
+                      <div className="w-full truncate text-sm">
+                        {chat.title}
+                      </div>
+                      <div className="w-full truncate text-xs text-muted-foreground">
+                        {chat.messages[
+                          chat.messages.length - 1
+                        ]?.content.substring(0, 30) || "No messages yet"}
+                      </div>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
-                  Select a chat or start a new one
-                </div>
-              )}
-            </div>
-          </main>
-  
-          {/* Chat Input */}
-          <div className="p-4 border-t">
-            <div className="flex space-x-2 max-w-3xl mx-auto">
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleRenameChat(chat.id)}
+                >
+                  <Edit2 className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => deleteChat(chat.id)}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+
+        {/* Bottom Actions */}
+        <div className="p-4 border-t space-y-2">
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-2 text-muted-foreground"
+          >
+            <FolderPlus className="w-4 h-4" />
+            Create folder
+          </Button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-2 text-muted-foreground"
+            onClick={() => {
+              setChats([]);
+              setCurrentChat(null);
+            }}
+          >
+            <Trash2 className="w-4 h-4" />
+            Clear conversations
+          </Button>
+          <Separator />
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-2 text-muted-foreground"
+          >
+            <Settings className="w-4 h-4" />
+            Settings
+          </Button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-2 text-muted-foreground"
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="border-b p-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold">
+              {currentChat ? currentChat.title : "New Chat"}
+            </span>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Type your message here..."
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    sendMessage();
-                  }
-                }}
-                className="flex-1"
+                type="search"
+                placeholder="Search messages"
+                className="pl-8 w-64"
               />
-              <Button
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-                onClick={sendMessage}
-              >
-                <Send className="h-4 w-4" />
-              </Button>
             </div>
+            <Button variant="ghost" size="icon">
+              <Lock className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <HelpCircle className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Moon className="h-4 w-4" />
+            </Button>
+            <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white">
+              {user.charAt(0).toUpperCase()}
+            </div>
+          </div>
+        </header>
+
+        {/* Chat Area */}
+        <main className="flex-1 p-6 overflow-auto">
+          <div className="max-w-3xl mx-auto space-y-4">
+            {currentChat ? (
+              currentChat.messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-md p-3 rounded-lg ${message.sender === "user" ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-800"}`}
+                  >
+                    {message.content}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                Select a chat or start a new one
+              </div>
+            )}
+          </div>
+        </main>
+
+        {/* Chat Input */}
+        <div className="p-4 border-t">
+          <div className="flex space-x-2 max-w-3xl mx-auto">
+            <Input
+              placeholder="Type your message here..."
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  sendMessage();
+                }
+              }}
+              className="flex-1"
+            />
+            <Button
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+              onClick={sendMessage}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
-    );
+    </div>
+  );
 }

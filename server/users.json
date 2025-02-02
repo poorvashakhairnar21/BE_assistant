@@ -4,6 +4,22 @@
     "password": "$2b$10$BJ/zvQ1yHU1U9yBhakVqO.QbBcHH7tUSaoI0lJJySAl19ROJRew7G",
     "chats": [
       {
+        "id": 1738513607911,
+        "title": "New Chat 2",
+        "messages": [
+          {
+            "id": 1738513612142,
+            "content": "hii",
+            "sender": "user"
+          },
+          {
+            "id": 1738513612717,
+            "content": "AI: iih",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
         "id": 1738509299376,
         "title": "New Chat 3",
         "messages": [
