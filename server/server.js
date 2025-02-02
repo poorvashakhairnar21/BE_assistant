@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const SECRET_KEY = "your-secret-key"; // In a real app, use an environment variable
+const SECRET_KEY = "your-secret-key"; // Store in env variable in real apps
 const USER_FILE = "users.json";
 
 // Helper function to read users from file
@@ -16,13 +16,17 @@ function readUsers() {
   if (!fs.existsSync(USER_FILE)) {
     return {};
   }
-  const data = fs.readFileSync(USER_FILE, "utf8");
-  return JSON.parse(data);
+  return JSON.parse(fs.readFileSync(USER_FILE, "utf8"));
 }
 
 // Helper function to write users to file
 function writeUsers(users) {
   fs.writeFileSync(USER_FILE, JSON.stringify(users, null, 2));
+}
+
+// Generate JWT token with expiration
+function generateToken(email) {
+  return jwt.sign({ email }, SECRET_KEY, { expiresIn: "1h" });
 }
 
 // Signup route
@@ -35,15 +39,11 @@ app.post("/signup", async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  users[email] = {
-    email,
-    password: hashedPassword,
-    chats: [],
-  };
+  users[email] = { email, password: hashedPassword, chats: [] };
 
   writeUsers(users);
 
-  const token = jwt.sign({ email }, SECRET_KEY);
+  const token = generateToken(email);
   res.json({ token });
 });
 
@@ -62,7 +62,7 @@ app.post("/login", async (req, res) => {
     return res.status(401).json({ error: "Invalid password" });
   }
 
-  const token = jwt.sign({ email }, SECRET_KEY);
+  const token = generateToken(email);
   res.json({ token });
 });
 
@@ -71,27 +71,41 @@ function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (token == null) return res.sendStatus(401);
+  if (!token) return res.status(401).json({ error: "No token provided" });
 
   jwt.verify(token, SECRET_KEY, (err, user) => {
-    if (err) return res.sendStatus(403);
+    if (err) return res.status(403).json({ error: "Invalid or expired token" });
+
     req.user = user;
     next();
   });
 }
 
-// Protected route to get user chats
+// Verify token endpoint
+app.post("/verify-token", (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) return res.status(401).json({ error: "No token provided" });
+
+  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+    if (err) return res.status(403).json({ error: "Invalid or expired token" });
+
+    res.json({ email: decoded.email });
+  });
+});
+
+// Get user chats
 app.get("/chats", authenticateToken, (req, res) => {
   const users = readUsers();
   const user = users[req.user.email];
   res.json(user.chats);
 });
 
-// Protected route to update user chats
+// Update user chats
 app.post("/chats", authenticateToken, (req, res) => {
   const users = readUsers();
-  const user = users[req.user.email];
-  user.chats = req.body.chats;
+  users[req.user.email].chats = req.body.chats;
   writeUsers(users);
   res.json({ message: "Chats updated successfully" });
 });

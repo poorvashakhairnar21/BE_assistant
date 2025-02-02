@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { login, signup, getChats, updateChats } from "@/utils/api";
+import { login, signup, getChats, updateChats, validateToken } from "@/utils/api"; 
 import { Login } from "@/components/auth/Login";
 import { Signup } from "@/components/auth/Signup";
 
@@ -42,12 +42,63 @@ export default function ChatUI() {
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [showLogin, setShowLogin] = useState(true);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+  const [loading, setLoading] = useState(true); // Add loading state
+  
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      const token = await login(email, password);
+      localStorage.setItem("token", token);
+      localStorage.setItem("userEmail", email);
+      setUser(email);
       loadUserChats();
+    } catch (error) {
+      throw error;
     }
+  };
+
+  const handleSignup = async (email: string, password: string) => {
+    try {
+      const token = await signup(email, password);
+      localStorage.setItem("token", token);
+      localStorage.setItem("userEmail", email);
+      setUser(email);
+    } catch (error) {
+      console.error("Signup failed:", error);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userEmail");
+    setUser(null);
+    setChats([]);
+    setCurrentChat(null);
+  };
+  
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("token");
+      const storedUser = localStorage.getItem("userEmail");
+
+      if (token && storedUser) {
+        try {
+          const isValid = await validateToken(token);
+          if (isValid) {
+            setUser(storedUser);
+            loadUserChats();
+          } else {
+            handleLogout();
+          }
+        } catch (error) {
+          console.error("Token validation failed:", error);
+          handleLogout();
+        }
+      } else {
+        handleLogout();
+      }
+      setLoading(false); // Stop loading once the auth check is complete
+    };
+    checkAuth();
   }, []);
 
   const loadUserChats = async () => {
@@ -64,6 +115,11 @@ export default function ChatUI() {
       updateChats(chats);
     }
   }, [user, chats]);
+
+  if (loading) {
+    // Show a loading indicator or nothing until auth check is complete
+    return <div></div>;
+  }
 
   const createNewChat = () => {
     const newChat: Chat = {
@@ -89,9 +145,7 @@ export default function ChatUI() {
       messages: [...currentChat.messages, userMessage],
     };
 
-    setChats(
-      chats.map((chat) => (chat.id === currentChat.id ? updatedChat : chat)),
-    );
+    setChats(chats.map((chat) => (chat.id === currentChat.id ? updatedChat : chat)));
     setCurrentChat(updatedChat);
     setInputMessage("");
 
@@ -106,11 +160,7 @@ export default function ChatUI() {
         ...updatedChat,
         messages: [...updatedChat.messages, aiMessage],
       };
-      setChats(
-        chats.map((chat) =>
-          chat.id === currentChat.id ? chatWithAiResponse : chat,
-        ),
-      );
+      setChats(chats.map((chat) => (chat.id === currentChat.id ? chatWithAiResponse : chat)));
       setCurrentChat(chatWithAiResponse);
     }, 1000);
   };
@@ -125,11 +175,7 @@ export default function ChatUI() {
 
   const saveRenamedChat = () => {
     if (isEditing) {
-      setChats(
-        chats.map((chat) =>
-          chat.id === isEditing ? { ...chat, title: editTitle } : chat,
-        ),
-      );
+      setChats(chats.map((chat) => (chat.id === isEditing ? { ...chat, title: editTitle } : chat)));
       setIsEditing(null);
     }
   };
@@ -140,36 +186,7 @@ export default function ChatUI() {
       setCurrentChat(null);
     }
   };
-
-  const handleLogin = async (email: string, password: string) => {
-    try {
-      await login(email, password);
-      setUser(email);
-      loadUserChats();
-    } catch (error) {
-      // console.error("Login failed:", error);
-      // Handle login error (show message to user)
-      throw error
-    }
-  };
-
-  const handleSignup = async (email: string, password: string) => {
-    try {
-      await signup(email, password);
-      setUser(email);
-    } catch (error) {
-      console.error("Signup failed:", error);
-      // Handle signup error (show message to user)
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    setChats([]);
-    setCurrentChat(null);
-  };
-
+  
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
