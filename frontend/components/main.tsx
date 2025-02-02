@@ -21,7 +21,9 @@ import { Separator } from "@/components/ui/separator";
 import { login, signup, getChats, updateChats, validateToken } from "@/utils/api"; 
 import { Login } from "@/components/auth/Login";
 import { Signup } from "@/components/auth/Signup";
-import { OceanWaves } from "@/components/OceanWaves.tsx";
+import { crossButton, voiceImg } from "@/components/OceanWaves.tsx"
+// import { OceanWaves } from "@/components/OceanWaves.tsx";
+import "@/app/OceanWaves.css";
 
 interface Message {
   id: number;
@@ -44,7 +46,7 @@ export default function Main() {
   const [editTitle, setEditTitle] = useState("");
   const [showLogin, setShowLogin] = useState(true);
   const [loading, setLoading] = useState(true); // Add loading state
-  const [voiceAi,setVoiceAi]=useState(true);
+  const [voiceAiMax,setVoiceAiMax]=useState(false);
   
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -76,6 +78,11 @@ export default function Main() {
     setChats([]);
     setCurrentChat(null);
   };
+  
+  useEffect(() => {
+    const isVoiceMax = localStorage.getItem("voiceAiMax") === "true";
+    setVoiceAiMax(isVoiceMax);
+  }, []);
   
   useEffect(() => {
     const checkAuth = async () => {
@@ -123,6 +130,7 @@ export default function Main() {
     return <div></div>;
   }
 
+  
   const createNewChat = () => {
     const newChat: Chat = {
       id: Date.now(),
@@ -222,9 +230,23 @@ export default function Main() {
     );
   }
 
-  if(voiceAi){
+  if(voiceAiMax){
     return (
-      <OceanWaves />
+      <>
+      <div className="ocean">
+          <div className="wave"></div>
+          <div className="wave"></div>
+      </div>
+      <div className="cross">
+      <button className="cross-button" onClick={() => {
+              localStorage.setItem("voiceAiMax", "false");
+              setVoiceAiMax(false);
+              window.location.reload();
+            }}> 
+        <img className="cross-img" src={crossButton} alt="cross-button"></img>
+      </button>
+      </div>
+    </>
   )
   }
 
@@ -412,6 +434,17 @@ export default function Main() {
             >
               <Send className="h-4 w-4" />
             </Button>
+            <button
+            className=""
+            onClick={() => {
+              localStorage.setItem("voiceAiMax", "true");
+              setVoiceAiMax(true);
+              window.location.reload();
+            }}
+          >
+            <img src={voiceImg} className="h-10 w-10"></img>
+          </button>
+
           </div>
         </div>
       </div>

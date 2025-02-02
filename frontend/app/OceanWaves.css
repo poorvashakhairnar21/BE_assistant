@@ -29,6 +29,19 @@ body {
   opacity: 1;
 }
 
+.cross{
+  position: sticky;
+  top: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cross-img {
+  height: 50px;
+  width: 50px;
+}
+
 @keyframes wave {
   0% {
     margin-left: 0;
