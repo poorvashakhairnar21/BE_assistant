@@ -131,39 +131,52 @@ export default function Main() {
     setCurrentChat(newChat);
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!inputMessage.trim() || !currentChat) return;
-
+  
     const userMessage: Message = {
       id: Date.now(),
       content: inputMessage,
       sender: "user",
     };
-
+  
     const updatedChat = {
       ...currentChat,
       messages: [...currentChat.messages, userMessage],
     };
-
+  
     setChats(chats.map((chat) => (chat.id === currentChat.id ? updatedChat : chat)));
     setCurrentChat(updatedChat);
     setInputMessage("");
-
-    // Simulate AI response
-    setTimeout(() => {
+  
+    try {
+      const response = await fetch("http://localhost:3002/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: inputMessage }),
+      });
+  
+      if (!response.ok) throw new Error("Failed to fetch AI response");
+  
+      const data = await response.json();
+  
       const aiMessage: Message = {
         id: Date.now(),
-        content: `AI response to: ${inputMessage}`,
+        content: data.reply,
         sender: "ai",
       };
+  
       const chatWithAiResponse = {
         ...updatedChat,
         messages: [...updatedChat.messages, aiMessage],
       };
+  
       setChats(chats.map((chat) => (chat.id === currentChat.id ? chatWithAiResponse : chat)));
       setCurrentChat(chatWithAiResponse);
-    }, 1000);
-  };
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+    }
+  };  
 
   const handleRenameChat = (chatId: number) => {
     setIsEditing(chatId);

@@ -4,17 +4,47 @@
     "password": "$2b$10$BJ/zvQ1yHU1U9yBhakVqO.QbBcHH7tUSaoI0lJJySAl19ROJRew7G",
     "chats": [
       {
-        "id": 1738506629476,
-        "title": "New Chat 1",
+        "id": 1738509299376,
+        "title": "New Chat 3",
         "messages": [
           {
-            "id": 1738506632729,
+            "id": 1738509301966,
             "content": "hii",
             "sender": "user"
           },
           {
-            "id": 1738506633745,
-            "content": "AI response to: hii",
+            "id": 1738509302543,
+            "content": "AI: iih",
+            "sender": "ai"
+          },
+          {
+            "id": 1738509426836,
+            "content": "hii",
+            "sender": "user"
+          },
+          {
+            "id": 1738509427416,
+            "content": "AI: iih",
+            "sender": "ai"
+          },
+          {
+            "id": 1738509430102,
+            "content": "rtr",
+            "sender": "user"
+          },
+          {
+            "id": 1738509430108,
+            "content": "AI: rtr",
+            "sender": "ai"
+          },
+          {
+            "id": 1738509435189,
+            "content": "ads",
+            "sender": "user"
+          },
+          {
+            "id": 1738509435767,
+            "content": "AI: sda",
             "sender": "ai"
           }
         ]
