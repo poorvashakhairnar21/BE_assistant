@@ -29,7 +29,7 @@ body {
   opacity: 1;
 }
 
-.cross{
+.cross-dropdown{
   position: sticky;
   top: 50px;
   display: flex;
@@ -37,7 +37,7 @@ body {
   align-items: center;
 }
 
-.cross-img {
+.cross-img, .dropdown-img {
   height: 50px;
   width: 50px;
 }

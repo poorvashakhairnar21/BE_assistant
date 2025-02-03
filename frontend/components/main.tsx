@@ -21,8 +21,6 @@ import { Separator } from "@/components/ui/separator";
 import { login, signup, getChats, updateChats, validateToken } from "@/utils/api"; 
 import { Login } from "@/components/auth/Login";
 import { Signup } from "@/components/auth/Signup";
-import { crossButton, voiceImg } from "@/components/OceanWaves.tsx"
-// import { OceanWaves } from "@/components/OceanWaves.tsx";
 import "@/app/OceanWaves.css";
 
 interface Message {
@@ -46,7 +44,8 @@ export default function Main() {
   const [editTitle, setEditTitle] = useState("");
   const [showLogin, setShowLogin] = useState(true);
   const [loading, setLoading] = useState(true); // Add loading state
-  const [voiceAiMax,setVoiceAiMax]=useState(false);
+  const [voiceAiMax, setVoiceAiMax]=useState(false);
+  const [isVoice, setIsVoice]=useState(false)
   
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -82,7 +81,11 @@ export default function Main() {
   useEffect(() => {
     const isVoiceMax = localStorage.getItem("voiceAiMax") === "true";
     setVoiceAiMax(isVoiceMax);
-  }, []);
+  
+    const isIsVoice = localStorage.getItem("isVoice") === "true";
+    setIsVoice(isIsVoice);
+  }, [voiceAiMax, isVoice]); // Ensure it updates when these values change
+  
   
   useEffect(() => {
     const checkAuth = async () => {
@@ -230,21 +233,33 @@ export default function Main() {
     );
   }
 
-  if(voiceAiMax){
+  if(voiceAiMax && isVoice){
     return (
       <>
       <div className="ocean">
           <div className="wave"></div>
           <div className="wave"></div>
       </div>
-      <div className="cross">
-      <button className="cross-button" onClick={() => {
+      <div className="cross-dropdown">
+        <button className="dropdown-button" onClick={() => {
+                localStorage.setItem("voiceAiMax", "false");
+                localStorage.setItem("isVoice", "true");
+                setVoiceAiMax(false);
+                setIsVoice(true)
+                window.location.reload();
+              }}> 
+          <img className="dropdown-img" src="./dropDown.png" alt="cross-button"></img>
+        </button>
+
+        <button className="cross-button" onClick={() => {
               localStorage.setItem("voiceAiMax", "false");
+              localStorage.setItem("isVoice", "false");
               setVoiceAiMax(false);
+              setIsVoice(false)
               window.location.reload();
-            }}> 
-        <img className="cross-img" src={crossButton} alt="cross-button"></img>
-      </button>
+              }}> 
+          <img className="cross-img" src="./cross-button.png" alt="cross-button"></img>
+        </button>
       </div>
     </>
   )
@@ -416,6 +431,11 @@ export default function Main() {
 
         {/* Chat Input */}
         <div className="p-4 border-t">
+          {!voiceAiMax && isVoice &&
+            (<div className="flex space-x-2 max-w-3xl mx-auto">
+              <img src="/wave.gif" alt="ocean GIF"></img>
+            </div>
+          )}
           <div className="flex space-x-2 max-w-3xl mx-auto">
             <Input
               placeholder="Type your message here..."
@@ -434,17 +454,31 @@ export default function Main() {
             >
               <Send className="h-4 w-4" />
             </Button>
-            <button
-            className=""
-            onClick={() => {
-              localStorage.setItem("voiceAiMax", "true");
-              setVoiceAiMax(true);
-              window.location.reload();
-            }}
-          >
-            <img src={voiceImg} className="h-10 w-10"></img>
-          </button>
-
+            {!voiceAiMax && isVoice &&
+              (<button className="cross-button" onClick={() => {
+                localStorage.setItem("voiceAiMax", "false");
+                localStorage.setItem("isVoice", "false");
+                setVoiceAiMax(false);
+                setIsVoice(false)
+                window.location.reload();
+                }}> 
+                <img className="cross-img" src="./cross-button.png" alt="cross-button"></img>
+              </button>
+            )}
+            {!voiceAiMax && !isVoice &&
+              (<button
+              className=""
+              onClick={() => {
+                localStorage.setItem("voiceAiMax", "true");
+                localStorage.setItem("isVoice", "true");
+                setVoiceAiMax(true);
+                setIsVoice(true)
+                window.location.reload();
+              }}
+            >
+              <img src="./voice-ai.png" className="h-10 w-10"></img>
+            </button>
+            )}
           </div>
         </div>
       </div>
