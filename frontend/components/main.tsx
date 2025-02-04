@@ -21,6 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { login, signup, getChats, updateChats, validateToken } from "@/utils/api"; 
 import { Login } from "@/components/auth/Login";
 import { Signup } from "@/components/auth/Signup";
+import { useRef } from "react";
 import "@/app/OceanWaves.css";
 
 interface Message {
@@ -46,7 +47,10 @@ export default function Main() {
   const [loading, setLoading] = useState(true); // Add loading state
   const [voiceAiMax, setVoiceAiMax]=useState(false);
   const [isVoice, setIsVoice]=useState(false)
-  
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+
   const handleLogin = async (email: string, password: string) => {
     try {
       const token = await login(email, password);
@@ -77,15 +81,20 @@ export default function Main() {
     setChats([]);
     setCurrentChat(null);
   };
-  
+
   useEffect(() => {
     const isVoiceMax = localStorage.getItem("voiceAiMax") === "true";
-    setVoiceAiMax(isVoiceMax);
-  
     const isIsVoice = localStorage.getItem("isVoice") === "true";
+    setVoiceAiMax(isVoiceMax);
     setIsVoice(isIsVoice);
-  }, [voiceAiMax, isVoice]); // Ensure it updates when these values change
+  }, []); // Only run once on mount
   
+  const handleVoiceAiToggle = (newVoiceAiMax, newIsVoice) => {
+    localStorage.setItem("voiceAiMax", newVoiceAiMax.toString());
+    localStorage.setItem("isVoice", newIsVoice.toString());
+    setVoiceAiMax(newVoiceAiMax);
+    setIsVoice(newIsVoice);
+  };  
   
   useEffect(() => {
     const checkAuth = async () => {
@@ -120,28 +129,6 @@ export default function Main() {
     } catch (error) {
       console.error("Failed to load chats:", error);
     }
-  };
-
-  useEffect(() => {
-    if (user) {
-      updateChats(chats);
-    }
-  }, [user, chats]);
-
-  if (loading) {
-    // Show a loading indicator or nothing until auth check is complete
-    return <div></div>;
-  }
-
-  
-  const createNewChat = () => {
-    const newChat: Chat = {
-      id: Date.now(),
-      title: `New Chat ${chats.length + 1}`,
-      messages: [],
-    };
-    setChats([newChat, ...chats]);
-    setCurrentChat(newChat);
   };
 
   const sendMessage = async () => {
@@ -189,6 +176,55 @@ export default function Main() {
     } catch (error) {
       console.error("Error fetching AI response:", error);
     }
+    if(isVoice){
+      startListening();
+    }
+  };
+
+  useEffect(() => {
+    if (!("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
+      alert("Your browser does not support Speech Recognition");
+      return;
+    }
+    console.log("speech setup done")
+    recognitionRef.current = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognitionRef.current.lang = "en-US"; // Set language
+    recognitionRef.current.interimResults = true;
+    recognitionRef.current.continuous = true;
+  
+    recognitionRef.current.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .map((result) => result[0].transcript)
+        .join("");
+      console.log(transcript);
+      setInputMessage(transcript);
+    };
+  
+    recognitionRef.current.onend = () => {
+      setIsListening(false);
+      sendMessage();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      updateChats(chats);
+    }
+  }, [user, chats]);
+
+  if (loading) {
+    // Show a loading indicator or nothing until auth check is complete
+    return <div></div>;
+  }
+
+  const createNewChat = () => {
+    const newChat: Chat = {
+      id: Date.now(),
+      title: `New Chat ${chats.length + 1}`,
+      messages: [],
+    };
+    setChats([newChat, ...chats]);
+    setCurrentChat(newChat);
   };  
 
   const handleRenameChat = (chatId: number) => {
@@ -212,7 +248,27 @@ export default function Main() {
       setCurrentChat(null);
     }
   };
-  
+
+  const startListening = () => {
+    try {
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+        setIsListening(true);
+        console.log("listning started")
+      }
+    } catch (error) {
+      console.error("Speech recognition error:", error);
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      console.log("listning ended")
+    }
+  };
+
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
@@ -236,28 +292,16 @@ export default function Main() {
   if(voiceAiMax && isVoice){
     return (
       <>
-      <div className="ocean">
+      <div className="ocean transition-all duration-500 ease-in-out">
           <div className="wave"></div>
           <div className="wave"></div>
       </div>
       <div className="cross-dropdown">
-        <button className="dropdown-button" onClick={() => {
-                localStorage.setItem("voiceAiMax", "false");
-                localStorage.setItem("isVoice", "true");
-                setVoiceAiMax(false);
-                setIsVoice(true)
-                window.location.reload();
-              }}> 
+        <button className="dropdown-button" onClick={() => handleVoiceAiToggle(false, true)}>
           <img className="dropdown-img" src="./dropDown.png" alt="cross-button"></img>
         </button>
 
-        <button className="cross-button" onClick={() => {
-              localStorage.setItem("voiceAiMax", "false");
-              localStorage.setItem("isVoice", "false");
-              setVoiceAiMax(false);
-              setIsVoice(false)
-              window.location.reload();
-              }}> 
+        <button className="cross-button" onClick={() => {handleVoiceAiToggle(false, false);stopListening();}}>
           <img className="cross-img" src="./cross-button.png" alt="cross-button"></img>
         </button>
       </div>
@@ -430,13 +474,13 @@ export default function Main() {
         </main>
 
         {/* Chat Input */}
-        <div className="p-4 border-t">
+        <div className="p-4 border-t transition-all duration-500 ease-in-out">
           {!voiceAiMax && isVoice &&
             (<div className="flex space-x-2 max-w-3xl mx-auto">
               <img src="/wave.gif" alt="ocean GIF"></img>
             </div>
           )}
-          <div className="flex space-x-2 max-w-3xl mx-auto">
+          <div className="flex space-x-2 max-w-3xl mx-auto transition-all duration-500 ease-in-out">
             <Input
               placeholder="Type your message here..."
               value={inputMessage}
@@ -455,29 +499,17 @@ export default function Main() {
               <Send className="h-4 w-4" />
             </Button>
             {!voiceAiMax && isVoice &&
-              (<button className="cross-button" onClick={() => {
-                localStorage.setItem("voiceAiMax", "false");
-                localStorage.setItem("isVoice", "false");
-                setVoiceAiMax(false);
-                setIsVoice(false)
-                window.location.reload();
-                }}> 
+              (<button className="cross-button" onClick={() => {handleVoiceAiToggle(false, false); stopListening();}}>
                 <img className="cross-img" src="./cross-button.png" alt="cross-button"></img>
               </button>
             )}
             {!voiceAiMax && !isVoice &&
               (<button
-              className=""
-              onClick={() => {
-                localStorage.setItem("voiceAiMax", "true");
-                localStorage.setItem("isVoice", "true");
-                setVoiceAiMax(true);
-                setIsVoice(true)
-                window.location.reload();
-              }}
-            >
-              <img src="./voice-ai.png" className="h-10 w-10"></img>
-            </button>
+                className=""
+                onClick={() => {handleVoiceAiToggle(true, true); startListening();}}
+              >
+                <img src="./voice-ai.png" className="h-10 w-10" />
+              </button>
             )}
           </div>
         </div>

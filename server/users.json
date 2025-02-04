@@ -25,5 +25,81 @@
         ]
       }
     ]
+  },
+  "tejas1@gmail.com": {
+    "email": "tejas1@gmail.com",
+    "password": "$2b$10$nVA6DctnWjm.y.Fy42eDHeGcwY3vQmP0dLi/HKyp9xUKSA0NBUewe",
+    "chats": [
+      {
+        "id": 1738601343643,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738601348326,
+            "content": "i am tejas",
+            "sender": "user"
+          },
+          {
+            "id": 1738601348888,
+            "content": "AI: sajet ma i",
+            "sender": "ai"
+          }
+        ]
+      }
+    ]
+  },
+  "prathmesh@gmail.com": {
+    "email": "prathmesh@gmail.com",
+    "password": "$2b$10$LTheivo1hMA2Nt3OJAHfm.Ti7CnH4lVQ5wPf71enVFbSk/z744WYO",
+    "chats": [
+      {
+        "id": 1738602907434,
+        "title": "New Chat 3",
+        "messages": [
+          {
+            "id": 1738602908729,
+            "content": "hii",
+            "sender": "user"
+          },
+          {
+            "id": 1738602909303,
+            "content": "AI: iih",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738602873123,
+        "title": "New Chat 2",
+        "messages": [
+          {
+            "id": 1738602874132,
+            "content": "hii",
+            "sender": "user"
+          },
+          {
+            "id": 1738602874698,
+            "content": "AI: iih",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738602831884,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738602835300,
+            "content": "hello",
+            "sender": "user"
+          },
+          {
+            "id": 1738602835871,
+            "content": "AI: olleh",
+            "sender": "ai"
+          }
+        ]
+      }
+    ]
   }
 }

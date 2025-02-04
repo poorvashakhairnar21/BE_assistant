@@ -11,7 +11,6 @@ def chat():
 
     # Simulate an AI-generated response
     ai_response = f"AI: {user_message[::-1]}"  # Example: Reverse the message
-
     return jsonify({"reply": ai_response})
 
 if __name__ == "__main__":
