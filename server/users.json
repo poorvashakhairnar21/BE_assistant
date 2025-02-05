@@ -2,7 +2,76 @@
   "1@1.1": {
     "email": "1@1.1",
     "password": "$2b$10$BJ/zvQ1yHU1U9yBhakVqO.QbBcHH7tUSaoI0lJJySAl19ROJRew7G",
-    "chats": []
+    "chats": [
+      {
+        "id": 1738774457038,
+        "title": "New Chat 5",
+        "messages": [
+          {
+            "id": 1738774460949,
+            "content": "hiii",
+            "sender": "user"
+          },
+          {
+            "id": 1738774461277,
+            "content": "AI: iiih",
+            "sender": "ai"
+          },
+          {
+            "id": 1738774788125,
+            "content": "hey there I am Tejas",
+            "sender": "user"
+          },
+          {
+            "id": 1738774788709,
+            "content": "AI: sajeT ma I ereht yeh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738774451537,
+        "title": "New Chat 4",
+        "messages": [
+          {
+            "id": 1738774451537,
+            "content": "hh",
+            "sender": "user"
+          },
+          {
+            "id": 1738774452109,
+            "content": "AI: hh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738774443752,
+        "title": "New Chat 3",
+        "messages": []
+      },
+      {
+        "id": 1738773610552,
+        "title": "New Chat 2",
+        "messages": []
+      },
+      {
+        "id": 1738773338240,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738773354289,
+            "content": "Aashiqana",
+            "sender": "user"
+          },
+          {
+            "id": 1738773354867,
+            "content": "AI: anaqihsaA",
+            "sender": "ai"
+          }
+        ]
+      }
+    ]
   },
   "tejas@gmail.com": {
     "email": "tejas@gmail.com",

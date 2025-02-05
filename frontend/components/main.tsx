@@ -132,7 +132,24 @@ export default function Main() {
   };
 
   const sendMessage = async () => {
-    if (!inputMessage.trim() || !currentChat) return;
+    console.log("in send message start......");
+    console.log("Input Message:", inputMessage, "Current Chat:", currentChat);
+    if (!inputMessage.trim()) return; // Remove currentChat check here
+  
+    let targetChat = currentChat;
+  
+    // Create new chat if none exists
+    if (!targetChat) {
+      const newChatId = Date.now();
+      const newChat: Chat = {
+        id: newChatId,
+        title: `New Chat ${chats.length + 1}`,
+        messages: [],
+      };
+      setChats(prevChats => [newChat, ...prevChats]);
+      setCurrentChat(newChat);
+      targetChat = newChat; // Use the new chat immediately
+    }
   
     const userMessage: Message = {
       id: Date.now(),
@@ -140,14 +157,24 @@ export default function Main() {
       sender: "user",
     };
   
+    // Update the target chat with the user's message
     const updatedChat = {
-      ...currentChat,
-      messages: [...currentChat.messages, userMessage],
+      ...targetChat,
+      messages: [...targetChat.messages, userMessage],
     };
   
-    setChats(chats.map((chat) => (chat.id === currentChat.id ? updatedChat : chat)));
+    // Update state using functional updates to ensure consistency
+    setChats(prevChats => {
+      const chatExists = prevChats.some(chat => chat.id === targetChat.id);
+      if (chatExists) {
+        return prevChats.map(chat => 
+          chat.id === targetChat.id ? updatedChat : chat
+        );
+      } else {
+        return [updatedChat, ...prevChats];
+      }
+    });
     setCurrentChat(updatedChat);
-    setInputMessage("");
   
     try {
       const response = await fetch("http://localhost:3002/chat", {
@@ -166,17 +193,38 @@ export default function Main() {
         sender: "ai",
       };
   
+      // Add AI response to the chat
       const chatWithAiResponse = {
         ...updatedChat,
         messages: [...updatedChat.messages, aiMessage],
       };
   
-      setChats(chats.map((chat) => (chat.id === currentChat.id ? chatWithAiResponse : chat)));
+      setChats(prevChats => 
+        prevChats.map(chat => 
+          chat.id === targetChat.id ? chatWithAiResponse : chat
+        )
+      );
       setCurrentChat(chatWithAiResponse);
     } catch (error) {
       console.error("Error fetching AI response:", error);
+      // Rollback user message on error
+      setChats(prevChats => 
+        prevChats.map(chat => 
+          chat.id === targetChat.id 
+            ? { ...chat, messages: chat.messages.filter(msg => msg.id !== userMessage.id) } 
+            : chat
+        )
+      );
+      setCurrentChat(prevChat => 
+        prevChat && prevChat.id === targetChat.id 
+          ? { ...prevChat, messages: prevChat.messages.filter(msg => msg.id !== userMessage.id) } 
+          : prevChat
+      );
+    } finally {
+      setInputMessage("");
     }
-    if(isVoice){
+  
+    if (isVoice) {
       startListening();
     }
   };
@@ -190,8 +238,8 @@ export default function Main() {
     recognitionRef.current = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognitionRef.current.lang = "en-US"; // Set language
     recognitionRef.current.interimResults = true;
-    recognitionRef.current.continuous = true;
-  
+    // recognitionRef.current.continuous = true;
+    
     recognitionRef.current.onresult = (event) => {
       const transcript = Array.from(event.results)
         .map((result) => result[0].transcript)
@@ -202,7 +250,9 @@ export default function Main() {
   
     recognitionRef.current.onend = () => {
       setIsListening(false);
+      // saveRenamedChat()
       sendMessage();
+      console.log("in ReconginisitionRef.current.onend")
     };
   }, []);
 
