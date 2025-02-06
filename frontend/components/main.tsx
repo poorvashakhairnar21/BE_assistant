@@ -131,10 +131,13 @@ export default function Main() {
     }
   };
 
-  const sendMessage = async () => {
+  const sendMessage = async (finalMassage) => {
     console.log("in send message start......");
-    console.log("Input Message:", inputMessage, "Current Chat:", currentChat);
-    if (!inputMessage.trim()) return; // Remove currentChat check here
+    console.log("Input Message:", finalMassage, "Current Chat:", currentChat);
+    if(!finalMassage){
+      finalMassage=inputMessage
+    }
+    if (!finalMassage.trim()) return; // Remove currentChat check here
   
     let targetChat = currentChat;
   
@@ -153,7 +156,7 @@ export default function Main() {
   
     const userMessage: Message = {
       id: Date.now(),
-      content: inputMessage,
+      content: finalMassage,
       sender: "user",
     };
   
@@ -180,7 +183,7 @@ export default function Main() {
       const response = await fetch("http://localhost:3002/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: inputMessage }),
+        body: JSON.stringify({ message: finalMassage }),
       });
   
       if (!response.ok) throw new Error("Failed to fetch AI response");
@@ -223,9 +226,30 @@ export default function Main() {
     } finally {
       setInputMessage("");
     }
-  
-    if (isVoice) {
+    console.log(localStorage.getItem("isVoice") === "true")
+    if (localStorage.getItem("isVoice") === "true") {
       startListening();
+    }
+  };
+
+  const startListening = () => {
+    try {
+      console.log("startlisting", recognitionRef.current)
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+        setIsListening(true);
+        console.log("listning started")
+      }
+    } catch (error) {
+      console.error("Speech recognition error:", error);
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      console.log("listning ended")
     }
   };
 
@@ -239,19 +263,22 @@ export default function Main() {
     recognitionRef.current.lang = "en-US"; // Set language
     recognitionRef.current.interimResults = true;
     // recognitionRef.current.continuous = true;
-    
+
+    let transcript;
     recognitionRef.current.onresult = (event) => {
-      const transcript = Array.from(event.results)
+       transcript = Array.from(event.results)
         .map((result) => result[0].transcript)
         .join("");
-      console.log(transcript);
-      setInputMessage(transcript);
+        setInputMessage(transcript);
+        console.log(transcript);
+        console.log(inputMessage)
     };
   
     recognitionRef.current.onend = () => {
       setIsListening(false);
       // saveRenamedChat()
-      sendMessage();
+      sendMessage(transcript);
+      transcript=""
       console.log("in ReconginisitionRef.current.onend")
     };
   }, []);
@@ -299,25 +326,6 @@ export default function Main() {
     }
   };
 
-  const startListening = () => {
-    try {
-      if (recognitionRef.current) {
-        recognitionRef.current.start();
-        setIsListening(true);
-        console.log("listning started")
-      }
-    } catch (error) {
-      console.error("Speech recognition error:", error);
-    }
-  };
-
-  const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-      console.log("listning ended")
-    }
-  };
 
   if (!user) {
     return (
@@ -339,6 +347,7 @@ export default function Main() {
     );
   }
 
+  // if(false)
   if(voiceAiMax && isVoice){
     return (
       <>
@@ -557,6 +566,7 @@ export default function Main() {
               (<button
                 className=""
                 onClick={() => {handleVoiceAiToggle(true, true); startListening();}}
+                // onClick={() => {handleVoiceAiToggle(false, true); startListening();}}
               >
                 <img src="./voice-ai.png" className="h-10 w-10" />
               </button>
