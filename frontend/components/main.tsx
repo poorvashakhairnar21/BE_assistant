@@ -13,16 +13,22 @@ import {
   FolderPlus,
   Send,
   Edit2,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { login, signup, getChats, updateChats, validateToken } from "@/utils/api"; 
+import {
+  login,
+  signup,
+  getChats,
+  updateChats,
+  validateToken,
+} from "@/utils/api";
 import { Login } from "@/components/auth/Login";
 import { Signup } from "@/components/auth/Signup";
 import { useRef } from "react";
-import "@/app/OceanWaves.css";
 
 interface Message {
   id: number;
@@ -45,11 +51,9 @@ export default function Main() {
   const [editTitle, setEditTitle] = useState("");
   const [showLogin, setShowLogin] = useState(true);
   const [loading, setLoading] = useState(true); // Add loading state
-  const [voiceAiMax, setVoiceAiMax]=useState(false);
-  const [isVoice, setIsVoice]=useState(false)
+  const [isVoice, setIsVoice] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -83,19 +87,14 @@ export default function Main() {
   };
 
   useEffect(() => {
-    const isVoiceMax = localStorage.getItem("voiceAiMax") === "true";
-    const isIsVoice = localStorage.getItem("isVoice") === "true";
-    setVoiceAiMax(isVoiceMax);
-    setIsVoice(isIsVoice);
+    localStorage.setItem("isVoice","false");
   }, []); // Only run once on mount
-  
-  const handleVoiceAiToggle = (newVoiceAiMax, newIsVoice) => {
-    localStorage.setItem("voiceAiMax", newVoiceAiMax.toString());
+
+  const handleVoiceAiToggle = (newIsVoice) => {
     localStorage.setItem("isVoice", newIsVoice.toString());
-    setVoiceAiMax(newVoiceAiMax);
     setIsVoice(newIsVoice);
-  };  
-  
+  };
+
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem("token");
@@ -132,15 +131,14 @@ export default function Main() {
   };
 
   const sendMessage = async (finalMassage) => {
-    console.log("in send message start......");
-    console.log("Input Message:", finalMassage, "Current Chat:", currentChat);
-    if(!finalMassage){
-      finalMassage=inputMessage
+    // console.log("final Message:", finalMassage, "input massage:",inputMessage,"Current Chat:", currentChat);
+    if (!finalMassage || finalMassage==="") {
+      finalMassage = inputMessage;
     }
     if (!finalMassage.trim()) return; // Remove currentChat check here
-  
+
     let targetChat = currentChat;
-  
+
     // Create new chat if none exists
     if (!targetChat) {
       const newChatId = Date.now();
@@ -149,28 +147,28 @@ export default function Main() {
         title: `New Chat ${chats.length + 1}`,
         messages: [],
       };
-      setChats(prevChats => [newChat, ...prevChats]);
+      setChats((prevChats) => [newChat, ...prevChats]);
       setCurrentChat(newChat);
       targetChat = newChat; // Use the new chat immediately
     }
-  
+
     const userMessage: Message = {
       id: Date.now(),
       content: finalMassage,
       sender: "user",
     };
-  
+
     // Update the target chat with the user's message
     const updatedChat = {
       ...targetChat,
       messages: [...targetChat.messages, userMessage],
     };
-  
+
     // Update state using functional updates to ensure consistency
-    setChats(prevChats => {
-      const chatExists = prevChats.some(chat => chat.id === targetChat.id);
+    setChats((prevChats) => {
+      const chatExists = prevChats.some((chat) => chat.id === targetChat.id);
       if (chatExists) {
-        return prevChats.map(chat => 
+        return prevChats.map((chat) =>
           chat.id === targetChat.id ? updatedChat : chat
         );
       } else {
@@ -178,32 +176,32 @@ export default function Main() {
       }
     });
     setCurrentChat(updatedChat);
-  
+
     try {
       const response = await fetch("http://localhost:3002/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: finalMassage }),
       });
-  
+
       if (!response.ok) throw new Error("Failed to fetch AI response");
-  
+
       const data = await response.json();
-  
+
       const aiMessage: Message = {
         id: Date.now(),
         content: data.reply,
         sender: "ai",
       };
-  
+
       // Add AI response to the chat
       const chatWithAiResponse = {
         ...updatedChat,
         messages: [...updatedChat.messages, aiMessage],
       };
-  
-      setChats(prevChats => 
-        prevChats.map(chat => 
+
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
           chat.id === targetChat.id ? chatWithAiResponse : chat
         )
       );
@@ -211,22 +209,31 @@ export default function Main() {
     } catch (error) {
       console.error("Error fetching AI response:", error);
       // Rollback user message on error
-      setChats(prevChats => 
-        prevChats.map(chat => 
-          chat.id === targetChat.id 
-            ? { ...chat, messages: chat.messages.filter(msg => msg.id !== userMessage.id) } 
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.id === targetChat.id
+            ? {
+                ...chat,
+                messages: chat.messages.filter(
+                  (msg) => msg.id !== userMessage.id
+                ),
+              }
             : chat
         )
       );
-      setCurrentChat(prevChat => 
-        prevChat && prevChat.id === targetChat.id 
-          ? { ...prevChat, messages: prevChat.messages.filter(msg => msg.id !== userMessage.id) } 
+      setCurrentChat((prevChat) =>
+        prevChat && prevChat.id === targetChat.id
+          ? {
+              ...prevChat,
+              messages: prevChat.messages.filter(
+                (msg) => msg.id !== userMessage.id
+              ),
+            }
           : prevChat
       );
     } finally {
       setInputMessage("");
     }
-    console.log(localStorage.getItem("isVoice") === "true")
     if (localStorage.getItem("isVoice") === "true") {
       startListening();
     }
@@ -234,11 +241,9 @@ export default function Main() {
 
   const startListening = () => {
     try {
-      console.log("startlisting", recognitionRef.current)
       if (recognitionRef.current) {
         recognitionRef.current.start();
         setIsListening(true);
-        console.log("listning started")
       }
     } catch (error) {
       console.error("Speech recognition error:", error);
@@ -249,37 +254,35 @@ export default function Main() {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       setIsListening(false);
-      console.log("listning ended")
     }
   };
 
   useEffect(() => {
-    if (!("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
+    if (
+      !("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
+    ) {
       alert("Your browser does not support Speech Recognition");
       return;
     }
-    console.log("speech setup done")
-    recognitionRef.current = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognitionRef.current = new (window.SpeechRecognition ||
+      window.webkitSpeechRecognition)();
     recognitionRef.current.lang = "en-US"; // Set language
     recognitionRef.current.interimResults = true;
     // recognitionRef.current.continuous = true;
 
-    let transcript;
+    let transcript = "";
     recognitionRef.current.onresult = (event) => {
-       transcript = Array.from(event.results)
+      transcript = Array.from(event.results)
         .map((result) => result[0].transcript)
         .join("");
-        setInputMessage(transcript);
-        console.log(transcript);
-        console.log(inputMessage)
+      setInputMessage(transcript);
     };
-  
+
     recognitionRef.current.onend = () => {
       setIsListening(false);
       // saveRenamedChat()
       sendMessage(transcript);
-      transcript=""
-      console.log("in ReconginisitionRef.current.onend")
+      transcript = "";
     };
   }, []);
 
@@ -302,7 +305,7 @@ export default function Main() {
     };
     setChats([newChat, ...chats]);
     setCurrentChat(newChat);
-  };  
+  };
 
   const handleRenameChat = (chatId: number) => {
     setIsEditing(chatId);
@@ -314,7 +317,11 @@ export default function Main() {
 
   const saveRenamedChat = () => {
     if (isEditing) {
-      setChats(chats.map((chat) => (chat.id === isEditing ? { ...chat, title: editTitle } : chat)));
+      setChats(
+        chats.map((chat) =>
+          chat.id === isEditing ? { ...chat, title: editTitle } : chat
+        )
+      );
       setIsEditing(null);
     }
   };
@@ -325,7 +332,6 @@ export default function Main() {
       setCurrentChat(null);
     }
   };
-
 
   if (!user) {
     return (
@@ -345,27 +351,6 @@ export default function Main() {
         </div>
       </div>
     );
-  }
-
-  // if(false)
-  if(voiceAiMax && isVoice){
-    return (
-      <>
-      <div className="ocean transition-all duration-500 ease-in-out">
-          <div className="wave"></div>
-          <div className="wave"></div>
-      </div>
-      <div className="cross-dropdown">
-        <button className="dropdown-button" onClick={() => handleVoiceAiToggle(false, true)}>
-          <img className="dropdown-img" src="./dropDown.png" alt="cross-button"></img>
-        </button>
-
-        <button className="cross-button" onClick={() => {handleVoiceAiToggle(false, false);stopListening();}}>
-          <img className="cross-img" src="./cross-button.png" alt="cross-button"></img>
-        </button>
-      </div>
-    </>
-  )
   }
 
   return (
@@ -515,10 +500,16 @@ export default function Main() {
               currentChat.messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex ${
+                    message.sender === "user" ? "justify-end" : "justify-start"
+                  }`}
                 >
                   <div
-                    className={`max-w-md p-3 rounded-lg ${message.sender === "user" ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-800"}`}
+                    className={`max-w-md p-3 rounded-lg ${
+                      message.sender === "user"
+                        ? "bg-purple-600 text-white"
+                        : "bg-gray-200 text-gray-800"
+                    }`}
                   >
                     {message.content}
                   </div>
@@ -534,11 +525,6 @@ export default function Main() {
 
         {/* Chat Input */}
         <div className="p-4 border-t transition-all duration-500 ease-in-out">
-          {!voiceAiMax && isVoice &&
-            (<div className="flex space-x-2 max-w-3xl mx-auto">
-              <img src="/wave.gif" alt="ocean GIF"></img>
-            </div>
-          )}
           <div className="flex space-x-2 max-w-3xl mx-auto transition-all duration-500 ease-in-out">
             <Input
               placeholder="Type your message here..."
@@ -551,25 +537,42 @@ export default function Main() {
               }}
               className="flex-1"
             />
-            <Button
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-              onClick={sendMessage}
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-            {!voiceAiMax && isVoice &&
-              (<button className="cross-button" onClick={() => {handleVoiceAiToggle(false, false); stopListening();}}>
-                <img className="cross-img" src="./cross-button.png" alt="cross-button"></img>
-              </button>
-            )}
-            {!voiceAiMax && !isVoice &&
-              (<button
-                className=""
-                onClick={() => {handleVoiceAiToggle(true, true); startListening();}}
-                // onClick={() => {handleVoiceAiToggle(false, true); startListening();}}
+            {!isVoice && (
+              <Button
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+                onClick={()=>sendMessage()}
               >
-                <img src="./voice-ai.png" className="h-10 w-10" />
-              </button>
+                <Send className="h-4 w-4" />
+              </Button>
+            )}
+            {isVoice && (
+              <Button
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+                onClick={() => {
+                  handleVoiceAiToggle(false);
+                  stopListening();
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+            {isVoice && (
+              <div className="">
+                <img className="h-10 w-20" src="/voice-line.gif" alt="voice line GIF"></img>
+              </div>
+            )}
+            {!isVoice && (
+              <div className="h-10 w-20">
+                <button
+                  className=""
+                  onClick={() => {
+                    handleVoiceAiToggle(true);
+                    startListening();
+                  }}
+                >
+                  <img src="./voice-ai.png" className="h-10 w-10 bg-transparent"/>
+                </button>
+              </div>
             )}
           </div>
         </div>
