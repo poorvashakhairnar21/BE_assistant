@@ -4,6 +4,80 @@
     "password": "$2b$10$BJ/zvQ1yHU1U9yBhakVqO.QbBcHH7tUSaoI0lJJySAl19ROJRew7G",
     "chats": [
       {
+        "id": 1738927104488,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738927104488,
+            "content": "how are you",
+            "sender": "user"
+          },
+          {
+            "id": 1738927104807,
+            "content": "AI: uoy era woh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738927092350,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738927092350,
+            "content": "hey there",
+            "sender": "user"
+          },
+          {
+            "id": 1738927092930,
+            "content": "AI: ereht yeh",
+            "sender": "ai"
+          },
+          {
+            "id": 1738927098076,
+            "content": "hii",
+            "sender": "user"
+          },
+          {
+            "id": 1738927098394,
+            "content": "AI: iih",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738926865489,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738926865489,
+            "content": "hey there",
+            "sender": "user"
+          },
+          {
+            "id": 1738926866062,
+            "content": "AI: ereht yeh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738926536443,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738926536443,
+            "content": "there I am Tejas",
+            "sender": "user"
+          },
+          {
+            "id": 1738926537030,
+            "content": "AI: sajeT ma I ereht",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
         "id": 1738925061600,
         "title": "New Chat 1",
         "messages": [

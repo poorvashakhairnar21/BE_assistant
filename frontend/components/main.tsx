@@ -297,8 +297,12 @@ export default function Main() {
       stopTimeoutId = setTimeout(() => {
         stopListening(); // Call the stopListening function
       }, 30000); // 30 seconds
+
     };
-  
+    recognitionRef.current.onend = () => {
+      handleVoiceAiToggle(false);
+      console.log("Speech recognition stopped, restarting...");
+    };
     // Cleanup function to clear timeouts when the component unmounts
     return () => {
       if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
