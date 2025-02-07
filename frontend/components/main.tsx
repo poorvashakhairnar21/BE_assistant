@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Search,
   Lock,
@@ -28,7 +28,6 @@ import {
 } from "@/utils/api";
 import { Login } from "@/components/auth/Login";
 import { Signup } from "@/components/auth/Signup";
-import { useRef } from "react";
 
 interface Message {
   id: number;
@@ -50,11 +49,11 @@ export default function Main() {
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [showLogin, setShowLogin] = useState(true);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
   const [isVoice, setIsVoice] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const transcriptRef = useRef(""); // Use a ref to store the transcript
+  const transcriptRef = useRef("");
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -87,12 +86,10 @@ export default function Main() {
     setCurrentChat(null);
   };
 
-  useEffect(() => {
-    localStorage.setItem("isVoice","false");
-  }, []); // Only run once on mount
+  // Removed the effect that sets "isVoice" in localStorage
 
-  const handleVoiceAiToggle = (newIsVoice) => {
-    localStorage.setItem("isVoice", newIsVoice.toString());
+  // Updated to only update the state variable
+  const handleVoiceAiToggle = (newIsVoice: boolean) => {
     setIsVoice(newIsVoice);
   };
 
@@ -117,7 +114,7 @@ export default function Main() {
       } else {
         handleLogout();
       }
-      setLoading(false); // Stop loading once the auth check is complete
+      setLoading(false);
     };
     checkAuth();
   }, []);
@@ -136,7 +133,7 @@ export default function Main() {
   
     let targetChat = currentChat;
   
-    // Create new chat if none exists
+    // Create a new chat if none exists
     if (!targetChat) {
       const newChatId = Date.now();
       const newChat: Chat = {
@@ -155,7 +152,7 @@ export default function Main() {
       sender: "user",
     };
   
-    // Update the target chat with the user's message
+    // Update the chat with the user's message
     const updatedChat = {
       ...targetChat,
       messages: [...targetChat.messages, userMessage],
@@ -204,7 +201,7 @@ export default function Main() {
       setCurrentChat(chatWithAiResponse);
     } catch (error) {
       console.error("Error fetching AI response:", error);
-      // Rollback user message on error
+      // Rollback the user message on error
       setChats((prevChats) =>
         prevChats.map((chat) =>
           chat.id === targetChat.id
@@ -224,7 +221,7 @@ export default function Main() {
           : prevChat
       );
     } finally {
-      setInputMessage(""); // Reset the input message state
+      setInputMessage("");
     }
   };
 
@@ -234,7 +231,7 @@ export default function Main() {
         recognitionRef.current.start();
         setIsListening(true);
         handleVoiceAiToggle(true);
-        console.log("At end of startListening...........")
+        console.log("At end of startListening...........");
       }
     } catch (error) {
       console.error("Speech recognition error:", error);
@@ -244,9 +241,7 @@ export default function Main() {
   const stopListening = () => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
-      setIsListening(false);
-      handleVoiceAiToggle(false);
-      console.log("At end of stopListening...........")
+      console.log("At end of stopListening...........");
     }
   };
 
@@ -257,53 +252,46 @@ export default function Main() {
     }
   
     recognitionRef.current = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognitionRef.current.lang = "en-US"; // Set language
+    recognitionRef.current.lang = "en-US";
     recognitionRef.current.interimResults = true;
     recognitionRef.current.continuous = true;
   
-    let pauseTimeoutId; // For 2-second pause
-    let stopTimeoutId; // For 30-second pause
-    let lastSentTranscript = ""; // Store the last sent transcript
+    let pauseTimeoutId: ReturnType<typeof setTimeout>;
+    let stopTimeoutId: ReturnType<typeof setTimeout>;
+    let lastSentTranscript = "";
   
     recognitionRef.current.onresult = (event) => {
-      // Clear previous timeouts
       if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
       if (stopTimeoutId) clearTimeout(stopTimeoutId);
   
-      // Get the current transcript
       let fullTranscript = Array.from(event.results)
         .map((result) => result[0].transcript)
         .join("");
   
-      // Remove the previously sent transcript from the new result
       let newTranscript = fullTranscript.replace(lastSentTranscript, "").trim();
   
-      // Update the input message only with the new transcript
       transcriptRef.current = newTranscript;
       setInputMessage(newTranscript);
   
-      // Set a new 2-second pause timeout
       pauseTimeoutId = setTimeout(() => {
         if (newTranscript) {
           setIsListening(false);
-          sendMessage(newTranscript); // Send only the new part
-          lastSentTranscript = fullTranscript; // Update last sent transcript
-          transcriptRef.current = ""; // Reset the transcript ref
-          setInputMessage(""); // Reset the input message state
+          sendMessage(newTranscript);
+          lastSentTranscript = fullTranscript;
+          transcriptRef.current = "";
+          setInputMessage("");
         }
-      }, 1000); // 2 seconds
+      }, 1000);
   
-      // Set a new 30-second stop timeout
       stopTimeoutId = setTimeout(() => {
-        stopListening(); // Call the stopListening function
-      }, 30000); // 30 seconds
-
+        stopListening();
+      }, 30000);
     };
     recognitionRef.current.onend = () => {
       handleVoiceAiToggle(false);
-      console.log("Speech recognition stopped, restarting...");
+      setIsListening(false);
+      console.log("Speech recognition stopped...");
     };
-    // Cleanup function to clear timeouts when the component unmounts
     return () => {
       if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
       if (stopTimeoutId) clearTimeout(stopTimeoutId);
@@ -317,7 +305,6 @@ export default function Main() {
   }, [user, chats]);
 
   if (loading) {
-    // Show a loading indicator or nothing until auth check is complete
     return <div></div>;
   }
 
@@ -564,7 +551,7 @@ export default function Main() {
             {!isVoice && (
               <Button
                 className="bg-purple-600 hover:bg-purple-700 text-white"
-                onClick={()=>sendMessage()}
+                onClick={() => sendMessage()}
               >
                 <Send className="h-4 w-4" />
               </Button>
@@ -580,19 +567,18 @@ export default function Main() {
               </Button>
             )}
             {isVoice && (
-              <div className="">
-                <img className="h-10 w-20" src="/voice-line.gif" alt="voice line GIF"></img>
+              <div>
+                <img className="h-10 w-20" src="/voice-line.gif" alt="voice line GIF" />
               </div>
             )}
             {!isVoice && (
               <div className="h-10 w-20">
                 <button
-                  className=""
                   onClick={() => {
                     startListening();
                   }}
                 >
-                  <img src="./voice-ai.png" className="h-10 w-10 bg-transparent"/>
+                  <img src="./voice-ai.png" className="h-10 w-10 bg-transparent" alt="voice ai" />
                 </button>
               </div>
             )}
