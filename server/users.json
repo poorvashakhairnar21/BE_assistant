@@ -4,6 +4,214 @@
     "password": "$2b$10$BJ/zvQ1yHU1U9yBhakVqO.QbBcHH7tUSaoI0lJJySAl19ROJRew7G",
     "chats": [
       {
+        "id": 1738922679878,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738922679879,
+            "content": "there I am Tejas what are you doing",
+            "sender": "user"
+          },
+          {
+            "id": 1738922680440,
+            "content": "AI: gniod uoy era tahw sajeT ma I ereht",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738922546058,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738922546058,
+            "content": "hey there I am Tejas so we are building an app",
+            "sender": "user"
+          },
+          {
+            "id": 1738922546372,
+            "content": "AI: ppa na gnidliub era ew os sajeT ma I ereht yeh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738922515727,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738922515727,
+            "content": "hey there I am Tejas",
+            "sender": "user"
+          },
+          {
+            "id": 1738922516292,
+            "content": "AI: sajeT ma I ereht yeh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738922362918,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738922362918,
+            "content": "and Tejas",
+            "sender": "user"
+          },
+          {
+            "id": 1738922363236,
+            "content": "AI: sajeT dna",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738922332850,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738922332850,
+            "content": "hey there I am Tejas",
+            "sender": "user"
+          },
+          {
+            "id": 1738922333425,
+            "content": "AI: sajeT ma I ereht yeh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738922245154,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738922245154,
+            "content": "hey there I am Tejas",
+            "sender": "user"
+          },
+          {
+            "id": 1738922245729,
+            "content": "AI: sajeT ma I ereht yeh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738922131329,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738922131329,
+            "content": "I am Tejas",
+            "sender": "user"
+          },
+          {
+            "id": 1738922131900,
+            "content": "AI: sajeT ma I",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738921998913,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738921998913,
+            "content": "hey hey there I am biggest",
+            "sender": "user"
+          },
+          {
+            "id": 1738921999483,
+            "content": "AI: tseggib ma I ereht yeh yeh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738916389223,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738916389223,
+            "content": "ok nice",
+            "sender": "user"
+          },
+          {
+            "id": 1738916389796,
+            "content": "AI: ecin ko",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738916384708,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738916384708,
+            "content": "then what you think about this",
+            "sender": "user"
+          },
+          {
+            "id": 1738916384731,
+            "content": "AI: siht tuoba kniht uoy tahw neht",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738916380117,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738916380117,
+            "content": "oh so I think all it's right",
+            "sender": "user"
+          },
+          {
+            "id": 1738916380440,
+            "content": "AI: thgir s'ti lla kniht I os ho",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738916371764,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738916371764,
+            "content": "hey there",
+            "sender": "user"
+          },
+          {
+            "id": 1738916372324,
+            "content": "AI: ereht yeh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738916031865,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738916031865,
+            "content": "hey there",
+            "sender": "user"
+          },
+          {
+            "id": 1738916032447,
+            "content": "AI: ereht yeh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
         "id": 1738842764376,
         "title": "New Chat 1",
         "messages": [

@@ -244,6 +244,8 @@ export default function Main() {
       if (recognitionRef.current) {
         recognitionRef.current.start();
         setIsListening(true);
+        handleVoiceAiToggle(true);
+        console.log("At end of startListening...........")
       }
     } catch (error) {
       console.error("Speech recognition error:", error);
@@ -254,6 +256,8 @@ export default function Main() {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       setIsListening(false);
+      handleVoiceAiToggle(false);
+      console.log("At end of stopListening...........")
     }
   };
 
@@ -268,7 +272,7 @@ export default function Main() {
       window.webkitSpeechRecognition)();
     recognitionRef.current.lang = "en-US"; // Set language
     recognitionRef.current.interimResults = true;
-    // recognitionRef.current.continuous = true;
+    recognitionRef.current.continuous = true;
 
     let transcript = "";
     recognitionRef.current.onresult = (event) => {
@@ -283,6 +287,7 @@ export default function Main() {
       // saveRenamedChat()
       sendMessage(transcript);
       transcript = "";
+      console.log("At end of recognitionRef.current.onend...........")
     };
   }, []);
 
@@ -356,7 +361,7 @@ export default function Main() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div className="w-80 border-r bg-card flex flex-col">
+      <div className="w-70 border-r bg-card flex flex-col">
         {/* New Chat Button */}
         <div className="p-4">
           <Button
@@ -549,7 +554,6 @@ export default function Main() {
               <Button
                 className="bg-purple-600 hover:bg-purple-700 text-white"
                 onClick={() => {
-                  handleVoiceAiToggle(false);
                   stopListening();
                 }}
               >
@@ -566,7 +570,6 @@ export default function Main() {
                 <button
                   className=""
                   onClick={() => {
-                    handleVoiceAiToggle(true);
                     startListening();
                   }}
                 >
