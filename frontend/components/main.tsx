@@ -54,6 +54,7 @@ export default function Main() {
   const [isVoice, setIsVoice] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const transcriptRef = useRef(""); // Use a ref to store the transcript
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -130,15 +131,11 @@ export default function Main() {
     }
   };
 
-  const sendMessage = async (finalMassage) => {
-    // console.log("final Message:", finalMassage, "input massage:",inputMessage,"Current Chat:", currentChat);
-    if (!finalMassage || finalMassage==="") {
-      finalMassage = inputMessage;
-    }
-    if (!finalMassage.trim()) return; // Remove currentChat check here
-
+  const sendMessage = async (finalMessage = inputMessage) => {
+    if (!finalMessage || finalMessage.trim() === "") return;
+  
     let targetChat = currentChat;
-
+  
     // Create new chat if none exists
     if (!targetChat) {
       const newChatId = Date.now();
@@ -149,22 +146,21 @@ export default function Main() {
       };
       setChats((prevChats) => [newChat, ...prevChats]);
       setCurrentChat(newChat);
-      targetChat = newChat; // Use the new chat immediately
+      targetChat = newChat;
     }
-
+  
     const userMessage: Message = {
       id: Date.now(),
-      content: finalMassage,
+      content: finalMessage,
       sender: "user",
     };
-
+  
     // Update the target chat with the user's message
     const updatedChat = {
       ...targetChat,
       messages: [...targetChat.messages, userMessage],
     };
-
-    // Update state using functional updates to ensure consistency
+  
     setChats((prevChats) => {
       const chatExists = prevChats.some((chat) => chat.id === targetChat.id);
       if (chatExists) {
@@ -176,30 +172,30 @@ export default function Main() {
       }
     });
     setCurrentChat(updatedChat);
-
+  
     try {
       const response = await fetch("http://localhost:3002/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: finalMassage }),
+        body: JSON.stringify({ message: finalMessage }),
       });
-
+  
       if (!response.ok) throw new Error("Failed to fetch AI response");
-
+  
       const data = await response.json();
-
+  
       const aiMessage: Message = {
         id: Date.now(),
         content: data.reply,
         sender: "ai",
       };
-
+  
       // Add AI response to the chat
       const chatWithAiResponse = {
         ...updatedChat,
         messages: [...updatedChat.messages, aiMessage],
       };
-
+  
       setChats((prevChats) =>
         prevChats.map((chat) =>
           chat.id === targetChat.id ? chatWithAiResponse : chat
@@ -214,9 +210,7 @@ export default function Main() {
           chat.id === targetChat.id
             ? {
                 ...chat,
-                messages: chat.messages.filter(
-                  (msg) => msg.id !== userMessage.id
-                ),
+                messages: chat.messages.filter((msg) => msg.id !== userMessage.id),
               }
             : chat
         )
@@ -225,17 +219,12 @@ export default function Main() {
         prevChat && prevChat.id === targetChat.id
           ? {
               ...prevChat,
-              messages: prevChat.messages.filter(
-                (msg) => msg.id !== userMessage.id
-              ),
+              messages: prevChat.messages.filter((msg) => msg.id !== userMessage.id),
             }
           : prevChat
       );
     } finally {
-      setInputMessage("");
-    }
-    if (localStorage.getItem("isVoice") === "true") {
-      startListening();
+      setInputMessage(""); // Reset the input message state
     }
   };
 
@@ -262,34 +251,60 @@ export default function Main() {
   };
 
   useEffect(() => {
-    if (
-      !("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
-    ) {
+    if (!("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
       alert("Your browser does not support Speech Recognition");
       return;
     }
-    recognitionRef.current = new (window.SpeechRecognition ||
-      window.webkitSpeechRecognition)();
+  
+    recognitionRef.current = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognitionRef.current.lang = "en-US"; // Set language
     recognitionRef.current.interimResults = true;
     recognitionRef.current.continuous = true;
-
-    let transcript = "";
+  
+    let pauseTimeoutId; // For 2-second pause
+    let stopTimeoutId; // For 30-second pause
+    let lastSentTranscript = ""; // Store the last sent transcript
+  
     recognitionRef.current.onresult = (event) => {
-      transcript = Array.from(event.results)
+      // Clear previous timeouts
+      if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
+      if (stopTimeoutId) clearTimeout(stopTimeoutId);
+  
+      // Get the current transcript
+      let fullTranscript = Array.from(event.results)
         .map((result) => result[0].transcript)
         .join("");
-      setInputMessage(transcript);
+  
+      // Remove the previously sent transcript from the new result
+      let newTranscript = fullTranscript.replace(lastSentTranscript, "").trim();
+  
+      // Update the input message only with the new transcript
+      transcriptRef.current = newTranscript;
+      setInputMessage(newTranscript);
+  
+      // Set a new 2-second pause timeout
+      pauseTimeoutId = setTimeout(() => {
+        if (newTranscript) {
+          setIsListening(false);
+          sendMessage(newTranscript); // Send only the new part
+          lastSentTranscript = fullTranscript; // Update last sent transcript
+          transcriptRef.current = ""; // Reset the transcript ref
+          setInputMessage(""); // Reset the input message state
+        }
+      }, 1000); // 2 seconds
+  
+      // Set a new 30-second stop timeout
+      stopTimeoutId = setTimeout(() => {
+        stopListening(); // Call the stopListening function
+      }, 30000); // 30 seconds
     };
-
-    recognitionRef.current.onend = () => {
-      setIsListening(false);
-      // saveRenamedChat()
-      sendMessage(transcript);
-      transcript = "";
-      console.log("At end of recognitionRef.current.onend...........")
+  
+    // Cleanup function to clear timeouts when the component unmounts
+    return () => {
+      if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
+      if (stopTimeoutId) clearTimeout(stopTimeoutId);
     };
-  }, []);
+  }, []);  
 
   useEffect(() => {
     if (user) {
