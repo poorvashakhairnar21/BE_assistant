@@ -4,6 +4,11 @@
     "password": "$2b$10$BJ/zvQ1yHU1U9yBhakVqO.QbBcHH7tUSaoI0lJJySAl19ROJRew7G",
     "chats": [
       {
+        "id": 1739000185119,
+        "title": "New Chat 12",
+        "messages": []
+      },
+      {
         "id": 1738997959523,
         "title": "New Chat 1",
         "messages": [

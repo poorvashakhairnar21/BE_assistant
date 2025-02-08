@@ -460,24 +460,6 @@ export default function Main() {
 
         {/* Bottom Actions */}
         <div className="p-4 border-t space-y-2">
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-2 text-muted-foreground"
-          >
-            <FolderPlus className="w-4 h-4" />
-            Create folder
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-2 text-muted-foreground"
-            onClick={() => {
-              setChats([]);
-              setCurrentChat(null);
-            }}
-          >
-            <Trash2 className="w-4 h-4" />
-            Clear conversations
-          </Button>
           <Separator />
           <Button
             variant="ghost"
@@ -506,20 +488,6 @@ export default function Main() {
             </span>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search messages"
-                className="pl-8 w-64"
-              />
-            </div>
-            <Button variant="ghost" size="icon">
-              <Lock className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <HelpCircle className="h-4 w-4" />
-            </Button>
             <Button variant="ghost" size="icon">
               <Moon className="h-4 w-4" />
             </Button>
