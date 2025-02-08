@@ -4,256 +4,272 @@
     "password": "$2b$10$BJ/zvQ1yHU1U9yBhakVqO.QbBcHH7tUSaoI0lJJySAl19ROJRew7G",
     "chats": [
       {
-        "id": 1739012781683,
+        "id": 1739015868169,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739012781683,
+            "id": 1739015868169,
+            "content": "are you fine",
+            "sender": "user"
+          },
+          {
+            "id": 1739015868499,
+            "content": "are you fine",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1739015858685,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1739015858686,
+            "content": "hey there are you fine",
+            "sender": "user"
+          },
+          {
+            "id": 1739015859016,
+            "content": "hey there are you fine",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1739015824294,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1739015824294,
+            "content": "are you fine are you fine are you fine are you fine",
+            "sender": "user"
+          },
+          {
+            "id": 1739015824618,
+            "content": "are you fine are you fine are you fine are you fine",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1739015801775,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1739015801776,
+            "content": "how are you are you fine now are you fine now",
+            "sender": "user"
+          },
+          {
+            "id": 1739015802091,
+            "content": "how are you are you fine now are you fine now",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1739015795270,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1739015795270,
             "content": "how are you",
             "sender": "user"
           },
           {
-            "id": 1739012782250,
+            "id": 1739015795600,
             "content": "how are you",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1739012778174,
+        "id": 1739015788759,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739012778175,
-            "content": "how are you",
+            "id": 1739015788759,
+            "content": "where I am Tejas",
             "sender": "user"
           },
           {
-            "id": 1739012778206,
-            "content": "how are you",
+            "id": 1739015789341,
+            "content": "where I am Tejas",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1739012774046,
+        "id": 1739015406955,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739012774046,
-            "content": "how are you",
+            "id": 1739015406955,
+            "content": "there I am Tejas hello so so so so so are you free are you free now what are you talking about you hey there how are you free now",
             "sender": "user"
           },
           {
-            "id": 1739012774623,
-            "content": "how are you",
+            "id": 1739015407278,
+            "content": "there I am Tejas hello so so so so so are you free are you free now what are you talking about you hey there how are you free now",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1739012770410,
+        "id": 1739015397651,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739012770410,
-            "content": "how are you",
+            "id": 1739015397651,
+            "content": "just say that",
             "sender": "user"
           },
           {
-            "id": 1739012770436,
-            "content": "how are you",
+            "id": 1739015397982,
+            "content": "just say that",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1739012766406,
+        "id": 1739015383315,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739012766407,
-            "content": "how are you",
+            "id": 1739015383315,
+            "content": "you",
             "sender": "user"
           },
           {
-            "id": 1739012766977,
-            "content": "how are you",
+            "id": 1739015383635,
+            "content": "you",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1739012762911,
+        "id": 1739015377050,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739012762911,
-            "content": "how are you",
+            "id": 1739015377050,
+            "content": "are you free now what are you talking about",
             "sender": "user"
           },
           {
-            "id": 1739012762943,
-            "content": "how are you",
+            "id": 1739015377642,
+            "content": "are you free now what are you talking about",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1739012758922,
+        "id": 1739015367451,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739012758922,
-            "content": "how are you",
+            "id": 1739015367451,
+            "content": "free",
             "sender": "user"
           },
           {
-            "id": 1739012759512,
-            "content": "how are you",
+            "id": 1739015367479,
+            "content": "free",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1739012755422,
+        "id": 1739015364844,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739012755422,
-            "content": "how are you",
+            "id": 1739015364844,
+            "content": "are you",
             "sender": "user"
           },
           {
-            "id": 1739012755437,
-            "content": "how are you",
+            "id": 1739015365162,
+            "content": "are you",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1739012751705,
+        "id": 1739015358133,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739012751705,
-            "content": "how are you",
+            "id": 1739015358134,
+            "content": "hello so so so so so",
             "sender": "user"
           },
           {
-            "id": 1739012752030,
-            "content": "how are you",
+            "id": 1739015358463,
+            "content": "hello so so so so so",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1739012746193,
+        "id": 1739015348756,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739012746193,
-            "content": "I am fine thank you how are you how are you",
+            "id": 1739015348756,
+            "content": "there I am Tejas",
             "sender": "user"
           },
           {
-            "id": 1739012746512,
-            "content": "I am fine thank you how are you how are you",
+            "id": 1739015349338,
+            "content": "there I am Tejas",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1739012738519,
+        "id": 1739015206288,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739012738519,
+            "id": 1739015206288,
+            "content": "what you think",
+            "sender": "user"
+          },
+          {
+            "id": 1739015206303,
+            "content": "what you think",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1739015203206,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1739015203206,
+            "content": "what you think about this",
+            "sender": "user"
+          },
+          {
+            "id": 1739015203529,
+            "content": "what you think about this",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1739015197302,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1739015197302,
             "content": "hey there how are you",
             "sender": "user"
           },
           {
-            "id": 1739012739090,
-            "content": "hey there how are you",
-            "sender": "ai"
-          }
-        ]
-      },
-      {
-        "id": 1739012709739,
-        "title": "New Chat 1",
-        "messages": [
-          {
-            "id": 1739012709739,
-            "content": "hey there how are you I am fine what's about you I am",
-            "sender": "user"
-          },
-          {
-            "id": 1739012709766,
-            "content": "hey there how are you I am fine what's about you I am",
-            "sender": "ai"
-          }
-        ]
-      },
-      {
-        "id": 1739012705940,
-        "title": "New Chat 1",
-        "messages": [
-          {
-            "id": 1739012705940,
-            "content": "hey there how are you I am fine what's about you I am fine",
-            "sender": "user"
-          },
-          {
-            "id": 1739012706515,
-            "content": "hey there how are you I am fine what's about you I am fine",
-            "sender": "ai"
-          }
-        ]
-      },
-      {
-        "id": 1739012703419,
-        "title": "New Chat 1",
-        "messages": [
-          {
-            "id": 1739012703420,
-            "content": "I am fine what's",
-            "sender": "user"
-          },
-          {
-            "id": 1739012703444,
-            "content": "I am fine what's",
-            "sender": "ai"
-          }
-        ]
-      },
-      {
-        "id": 1739012700156,
-        "title": "New Chat 1",
-        "messages": [
-          {
-            "id": 1739012700156,
-            "content": "I am fine what's about you",
-            "sender": "user"
-          },
-          {
-            "id": 1739012700483,
-            "content": "I am fine what's about you",
-            "sender": "ai"
-          }
-        ]
-      },
-      {
-        "id": 1739012691246,
-        "title": "New Chat 1",
-        "messages": [
-          {
-            "id": 1739012691246,
-            "content": "hey there how are you",
-            "sender": "user"
-          },
-          {
-            "id": 1739012691836,
+            "id": 1739015197880,
             "content": "hey there how are you",
             "sender": "ai"
           }

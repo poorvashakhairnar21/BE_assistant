@@ -49,11 +49,11 @@ export default function Main() {
   const [showLogin, setShowLogin] = useState(true);
   const [loading, setLoading] = useState(true);
   const [isVoice, setIsVoice] = useState(false);
-  const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const synthRef = useRef<window.speechSynthesis | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const transcriptRef = useRef("");
+  const isSpeaking = useRef(false);
   const [theme, setTheme] = useDarkMode();
 
   const handleLogin = async (email: string, password: string) => {
@@ -97,7 +97,6 @@ export default function Main() {
     try {
       if (recognitionRef.current) {
         recognitionRef.current.start();
-        setIsListening(true);
         handleVoiceAiToggle(true);
         console.log("At end of startListening...........");
       }
@@ -112,6 +111,15 @@ export default function Main() {
       console.log("At end of stopListening...........");
     }
   };
+
+  useEffect(()=>{
+    synthRef.current = window.speechSynthesis;
+    utteranceRef.current = new SpeechSynthesisUtterance();
+
+    utteranceRef.current.onend = () => {
+      isSpeaking.current=false
+    }
+  },[])
 
   const speakText = (text) => {
     if (!text.trim()) return;
@@ -235,6 +243,7 @@ export default function Main() {
       setCurrentChat(chatWithAiResponse);
       // console.log(isToSpeak)
       if(isToSpeak){
+        isSpeaking.current=true
         speakText(data.reply)
       }
     } catch (error) {
@@ -281,7 +290,9 @@ export default function Main() {
     recognitionRef.current.onresult = (event) => {
       if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
       if (stopTimeoutId) clearTimeout(stopTimeoutId);
-  
+      
+      if (isSpeaking.current) return;
+
       let fullTranscript = Array.from(event.results)
         .map((result) => result[0].transcript)
         .join("");
@@ -293,7 +304,6 @@ export default function Main() {
   
       pauseTimeoutId = setTimeout(() => {
         if (newTranscript) {
-          setIsListening(false);
           sendMessage(newTranscript,true);
           lastSentTranscript = fullTranscript;
           transcriptRef.current = "";
@@ -308,7 +318,6 @@ export default function Main() {
     recognitionRef.current.onend = () => {
       handleVoiceAiToggle(false);
       stopSpeakingText()
-      setIsListening(false);
       console.log("Speech recognition stopped...");
     };
     return () => {
@@ -316,11 +325,6 @@ export default function Main() {
       if (stopTimeoutId) clearTimeout(stopTimeoutId);
     };
   }, []);  
-
-  useEffect(()=>{
-    synthRef.current = window.speechSynthesis;
-    utteranceRef.current = new SpeechSynthesisUtterance();
-  })
 
   useEffect(() => {
     if (user) {
