@@ -2,15 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-  Search,
-  Lock,
-  HelpCircle,
   Moon,
+  Sun,
   Plus,
   MessageSquare,
   Trash2,
   Settings,
-  FolderPlus,
   Send,
   Edit2,
   X,
@@ -19,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import  useDarkMode  from "@/components/ui/useDarkMode";
 import {
   login,
   signup,
@@ -56,6 +54,7 @@ export default function Main() {
   const synthRef = useRef<window.speechSynthesis | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const transcriptRef = useRef("");
+  const [theme, setTheme] = useDarkMode();
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -488,9 +487,9 @@ export default function Main() {
             </span>
           </div>
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon">
-              <Moon className="h-4 w-4" />
-            </Button>
+            <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="p-2 rounded-lg">
+              {theme === "dark" ? <Sun className="w-6 h-6 text-yellow-500" /> : <Moon className="w-6 h-6 text-gray-700" />}
+            </button>
             <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white">
               {user.charAt(0).toUpperCase()}
             </div>
