@@ -10,8 +10,9 @@ def chat():
     user_message = data.get("message", "")
 
     # Simulate an AI-generated response
-    ai_response = f"AI: {user_message[::-1]}"  # Example: Reverse the message
-    return jsonify({"reply": ai_response})
+    # ai_response = f"AI: {user_message[::-1]}"  # Example: Reverse the message
+    
+    return jsonify({"reply": user_message})
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=3002)

@@ -53,6 +53,8 @@ export default function Main() {
   const [isVoice, setIsVoice] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const synthRef = useRef<window.speechSynthesis | null>(null);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const transcriptRef = useRef("");
 
   const handleLogin = async (email: string, password: string) => {
@@ -87,10 +89,43 @@ export default function Main() {
   };
 
   // Removed the effect that sets "isVoice" in localStorage
-
   // Updated to only update the state variable
   const handleVoiceAiToggle = (newIsVoice: boolean) => {
     setIsVoice(newIsVoice);
+  };
+
+  const startListening = () => {
+    try {
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+        setIsListening(true);
+        handleVoiceAiToggle(true);
+        console.log("At end of startListening...........");
+      }
+    } catch (error) {
+      console.error("Speech recognition error:", error);
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      console.log("At end of stopListening...........");
+    }
+  };
+
+  const speakText = (text) => {
+    if (!text.trim()) return;
+    
+    utteranceRef.current.text = text;
+    utteranceRef.current.rate = 1;
+    utteranceRef.current.pitch = 1;
+    
+    synthRef.current.speak(utteranceRef.current);
+  };
+
+  const stopSpeakingText = () => {
+      synthRef.current.cancel();
   };
 
   useEffect(() => {
@@ -128,7 +163,7 @@ export default function Main() {
     }
   };
 
-  const sendMessage = async (finalMessage = inputMessage) => {
+  const sendMessage = async (finalMessage = inputMessage,isToSpeak=false) => {
     if (!finalMessage || finalMessage.trim() === "") return;
   
     let targetChat = currentChat;
@@ -199,6 +234,10 @@ export default function Main() {
         )
       );
       setCurrentChat(chatWithAiResponse);
+      // console.log(isToSpeak)
+      if(isToSpeak){
+        speakText(data.reply)
+      }
     } catch (error) {
       console.error("Error fetching AI response:", error);
       // Rollback the user message on error
@@ -222,26 +261,6 @@ export default function Main() {
       );
     } finally {
       setInputMessage("");
-    }
-  };
-
-  const startListening = () => {
-    try {
-      if (recognitionRef.current) {
-        recognitionRef.current.start();
-        setIsListening(true);
-        handleVoiceAiToggle(true);
-        console.log("At end of startListening...........");
-      }
-    } catch (error) {
-      console.error("Speech recognition error:", error);
-    }
-  };
-
-  const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      console.log("At end of stopListening...........");
     }
   };
 
@@ -276,7 +295,7 @@ export default function Main() {
       pauseTimeoutId = setTimeout(() => {
         if (newTranscript) {
           setIsListening(false);
-          sendMessage(newTranscript);
+          sendMessage(newTranscript,true);
           lastSentTranscript = fullTranscript;
           transcriptRef.current = "";
           setInputMessage("");
@@ -289,6 +308,7 @@ export default function Main() {
     };
     recognitionRef.current.onend = () => {
       handleVoiceAiToggle(false);
+      stopSpeakingText()
       setIsListening(false);
       console.log("Speech recognition stopped...");
     };
@@ -297,6 +317,11 @@ export default function Main() {
       if (stopTimeoutId) clearTimeout(stopTimeoutId);
     };
   }, []);  
+
+  useEffect(()=>{
+    synthRef.current = window.speechSynthesis;
+    utteranceRef.current = new SpeechSynthesisUtterance();
+  })
 
   useEffect(() => {
     if (user) {

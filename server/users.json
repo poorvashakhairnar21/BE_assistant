@@ -4,65 +4,197 @@
     "password": "$2b$10$BJ/zvQ1yHU1U9yBhakVqO.QbBcHH7tUSaoI0lJJySAl19ROJRew7G",
     "chats": [
       {
-        "id": 1738927549060,
+        "id": 1738997959523,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1738927549060,
-            "content": "look School",
+            "id": 1738997959523,
+            "content": "just where I am fine",
             "sender": "user"
           },
           {
-            "id": 1738927549372,
-            "content": "AI: loohcS kool",
+            "id": 1738997959848,
+            "content": "just where I am fine",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1738927543835,
+        "id": 1738997952544,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1738927543835,
-            "content": "so is anything that need you help",
+            "id": 1738997952544,
+            "content": "what are you doing",
             "sender": "user"
           },
           {
-            "id": 1738927544160,
-            "content": "AI: pleh uoy deen taht gnihtyna si os",
+            "id": 1738997952864,
+            "content": "what are you doing",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1738927537464,
+        "id": 1738997946117,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1738927537464,
-            "content": "let's see now how to check this website",
+            "id": 1738997946117,
+            "content": "and Tejas",
             "sender": "user"
           },
           {
-            "id": 1738927537789,
-            "content": "AI: etisbew siht kcehc ot woh won ees s'tel",
+            "id": 1738997946437,
+            "content": "and Tejas",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1738927531021,
+        "id": 1738997894228,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1738927531021,
-            "content": "I am Tejas",
+            "id": 1738997894229,
+            "content": "hi there I am Tejas",
             "sender": "user"
           },
           {
-            "id": 1738927531597,
-            "content": "AI: sajeT ma I",
+            "id": 1738997894556,
+            "content": "AI: sajeT ma I ereht ih",
+            "sender": "ai"
+          },
+          {
+            "id": 1738997939914,
+            "content": "hii",
+            "sender": "user"
+          },
+          {
+            "id": 1738997940492,
+            "content": "hii",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738997886270,
+        "title": "New Chat 7",
+        "messages": [
+          {
+            "id": 1738997886270,
+            "content": "hii",
+            "sender": "user"
+          },
+          {
+            "id": 1738997886841,
+            "content": "AI: iih",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738997533020,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738997533020,
+            "content": "hello hi there",
+            "sender": "user"
+          },
+          {
+            "id": 1738997533343,
+            "content": "AI: ereht ih olleh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738997522156,
+        "title": "New Chat 5",
+        "messages": [
+          {
+            "id": 1738997522156,
+            "content": "hii",
+            "sender": "user"
+          },
+          {
+            "id": 1738997522732,
+            "content": "AI: iih",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738997354877,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738997354877,
+            "content": "hey there",
+            "sender": "user"
+          },
+          {
+            "id": 1738997355199,
+            "content": "AI: ereht yeh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738997343989,
+        "title": "New Chat 3",
+        "messages": [
+          {
+            "id": 1738997343989,
+            "content": "hello",
+            "sender": "user"
+          },
+          {
+            "id": 1738997344306,
+            "content": "AI: olleh",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738997309081,
+        "title": "New Chat 2",
+        "messages": [
+          {
+            "id": 1738997309081,
+            "content": "hii",
+            "sender": "user"
+          },
+          {
+            "id": 1738997309413,
+            "content": "AI: iih",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
+        "id": 1738997210500,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1738997210500,
+            "content": "hii",
+            "sender": "user"
+          },
+          {
+            "id": 1738997211067,
+            "content": "AI: iih",
+            "sender": "ai"
+          },
+          {
+            "id": 1738997298604,
+            "content": "hii",
+            "sender": "user"
+          },
+          {
+            "id": 1738997299179,
+            "content": "AI: iih",
             "sender": "ai"
           }
         ]
