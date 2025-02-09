@@ -16,4 +16,3 @@ const TextToSpeech = () => {
         synthRef.current.cancel();
     };
 
-    git checkout c14f4cf46a737512ddebc8daaa59e569556b0dcb
