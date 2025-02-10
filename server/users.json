@@ -4,6 +4,52 @@
     "password": "$2b$10$BJ/zvQ1yHU1U9yBhakVqO.QbBcHH7tUSaoI0lJJySAl19ROJRew7G",
     "chats": [
       {
+        "id": 1739172392087,
+        "title": "New Chat 1",
+        "messages": [
+          {
+            "id": 1739172392087,
+            "content": "how are you",
+            "sender": "user"
+          },
+          {
+            "id": 1739172392672,
+            "content": "how are you",
+            "sender": "ai"
+          },
+          {
+            "id": 1739172396250,
+            "content": "how are you",
+            "sender": "user"
+          },
+          {
+            "id": 1739172396261,
+            "content": "how are you",
+            "sender": "ai"
+          },
+          {
+            "id": 1739172399658,
+            "content": "how are you",
+            "sender": "user"
+          },
+          {
+            "id": 1739172400225,
+            "content": "how are you",
+            "sender": "ai"
+          },
+          {
+            "id": 1739172403552,
+            "content": "how are you",
+            "sender": "user"
+          },
+          {
+            "id": 1739172403563,
+            "content": "how are you",
+            "sender": "ai"
+          }
+        ]
+      },
+      {
         "id": 1739172107981,
         "title": "New Chat 1",
         "messages": [
