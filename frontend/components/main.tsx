@@ -56,6 +56,9 @@ export default function Main() {
   const transcriptRef = useRef("");
   const [theme, setTheme] = useDarkMode();
 
+
+  // login , signup , and logout handles......................................................................
+
   const handleLogin = async (email: string, password: string) => {
     try {
       const token = await login(email, password);
@@ -87,46 +90,6 @@ export default function Main() {
     setCurrentChat(null);
   };
 
-  // Removed the effect that sets "isVoice" in localStorage
-  // Updated to only update the state variable
-  const handleVoiceAiToggle = (newIsVoice: boolean) => {
-    setIsVoice(newIsVoice);
-  };
-
-  const startListening = () => {
-    try {
-      if (recognitionRef.current) {
-        recognitionRef.current.start();
-        setIsListening(true);
-        handleVoiceAiToggle(true);
-        console.log("At end of startListening...........");
-      }
-    } catch (error) {
-      console.error("Speech recognition error:", error);
-    }
-  };
-
-  const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      console.log("At end of stopListening...........");
-    }
-  };
-
-  const speakText = (text) => {
-    if (!text.trim()) return;
-    
-    utteranceRef.current.text = text;
-    utteranceRef.current.rate = 1;
-    utteranceRef.current.pitch = 1;
-    
-    synthRef.current.speak(utteranceRef.current);
-  };
-
-  const stopSpeakingText = () => {
-      synthRef.current.cancel();
-  };
-
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem("token");
@@ -153,6 +116,8 @@ export default function Main() {
     checkAuth();
   }, []);
 
+  // chats handling section..........................................................................
+
   const loadUserChats = async () => {
     try {
       const userChats = await getChats();
@@ -161,6 +126,71 @@ export default function Main() {
       console.error("Failed to load chats:", error);
     }
   };
+
+  const createNewChat = () => {
+    const newChat: Chat = {
+      id: Date.now(),
+      title: `New Chat ${chats.length + 1}`,
+      messages: [],
+    };
+    setChats([newChat, ...chats]);
+    setCurrentChat(newChat);
+  };
+
+  const handleRenameChat = (chatId: number) => {
+    setIsEditing(chatId);
+    const chatToEdit = chats.find((chat) => chat.id === chatId);
+    if (chatToEdit) {
+      setEditTitle(chatToEdit.title);
+    }
+  };
+
+  const saveRenamedChat = () => {
+    if (isEditing) {
+      setChats(
+        chats.map((chat) =>
+          chat.id === isEditing ? { ...chat, title: editTitle } : chat
+        )
+      );
+      setIsEditing(null);
+    }
+  };
+
+  const deleteChat = (chatId: number) => {
+    setChats(chats.filter((chat) => chat.id !== chatId));
+    if (currentChat && currentChat.id === chatId) {
+      setCurrentChat(null);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      updateChats(chats);
+    }
+  }, [user, chats]);
+
+  // speech synthesis, text to speech section.............................................................
+
+  const speakText = (text) => {
+    if (!text.trim()) return;
+    
+    utteranceRef.current.text = text;
+    utteranceRef.current.rate = 1;
+    utteranceRef.current.pitch = 1;
+    
+    synthRef.current.speak(utteranceRef.current);
+  };
+
+  const stopSpeakingText = () => {
+      synthRef.current.cancel();
+  };
+  
+  useEffect(()=>{
+    synthRef.current = window.speechSynthesis;
+    utteranceRef.current = new SpeechSynthesisUtterance();
+  })
+
+  // send massage section .......................................................................................
 
   const sendMessage = async (finalMessage = inputMessage,isToSpeak=false) => {
     if (!finalMessage || finalMessage.trim() === "") return;
@@ -263,6 +293,28 @@ export default function Main() {
     }
   };
 
+  //speech recongnition section..............................................................................
+
+  const startListening = () => {
+    try {
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+        setIsListening(true);
+        setIsVoice(true);
+        console.log("At end of startListening...........");
+      }
+    } catch (error) {
+      console.error("Speech recognition error:", error);
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      console.log("At end of stopListening...........");
+    }
+  };
+
   useEffect(() => {
     if (!("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
       alert("Your browser does not support Speech Recognition");
@@ -295,9 +347,9 @@ export default function Main() {
         if (newTranscript) {
           setIsListening(false);
           sendMessage(newTranscript,true);
+          // setInputMessage("");
           lastSentTranscript = fullTranscript;
           transcriptRef.current = "";
-          setInputMessage("");
         }
       }, 1000);
   
@@ -306,7 +358,7 @@ export default function Main() {
       }, 30000);
     };
     recognitionRef.current.onend = () => {
-      handleVoiceAiToggle(false);
+      setIsVoice(false);
       stopSpeakingText()
       setIsListening(false);
       console.log("Speech recognition stopped...");
@@ -317,56 +369,9 @@ export default function Main() {
     };
   }, []);  
 
-  useEffect(()=>{
-    synthRef.current = window.speechSynthesis;
-    utteranceRef.current = new SpeechSynthesisUtterance();
-  })
-
-  useEffect(() => {
-    if (user) {
-      updateChats(chats);
-    }
-  }, [user, chats]);
-
   if (loading) {
     return <div></div>;
   }
-
-  const createNewChat = () => {
-    const newChat: Chat = {
-      id: Date.now(),
-      title: `New Chat ${chats.length + 1}`,
-      messages: [],
-    };
-    setChats([newChat, ...chats]);
-    setCurrentChat(newChat);
-  };
-
-  const handleRenameChat = (chatId: number) => {
-    setIsEditing(chatId);
-    const chatToEdit = chats.find((chat) => chat.id === chatId);
-    if (chatToEdit) {
-      setEditTitle(chatToEdit.title);
-    }
-  };
-
-  const saveRenamedChat = () => {
-    if (isEditing) {
-      setChats(
-        chats.map((chat) =>
-          chat.id === isEditing ? { ...chat, title: editTitle } : chat
-        )
-      );
-      setIsEditing(null);
-    }
-  };
-
-  const deleteChat = (chatId: number) => {
-    setChats(chats.filter((chat) => chat.id !== chatId));
-    if (currentChat && currentChat.id === chatId) {
-      setCurrentChat(null);
-    }
-  };
 
   if (!user) {
     return (
