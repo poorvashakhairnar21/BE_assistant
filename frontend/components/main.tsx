@@ -24,6 +24,9 @@ import {
   updateChats,
   validateToken,
 } from "@/utils/api";
+import {
+ getAiResponse
+} from "@/utils/client_api"
 import { Login } from "@/components/auth/Login";
 import { Signup } from "@/components/auth/Signup";
 
@@ -54,6 +57,7 @@ export default function Main() {
   const synthRef = useRef<window.speechSynthesis | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const transcriptRef = useRef("");
+  const currentChatRef = useRef<Chat | null>(null);
   const [theme, setTheme] = useDarkMode();
 
 
@@ -169,6 +173,10 @@ export default function Main() {
     }
   }, [user, chats]);
 
+  useEffect(() => {
+    currentChatRef.current = currentChat;
+  }, [currentChat]);
+  
   // speech synthesis, text to speech section.............................................................
 
   const speakText = (text) => {
@@ -195,21 +203,37 @@ export default function Main() {
   const sendMessage = async (finalMessage = inputMessage,isToSpeak=false) => {
     if (!finalMessage || finalMessage.trim() === "") return;
   
-    let targetChat = currentChat;
+    // let targetChat = currentChat;
   
+    // const createNewChat = () => {
+    //   const newChat: Chat = {
+    //     id: Date.now(),
+    //     title: `New Chat ${chats.length + 1}`,
+    //     messages: [],
+    //   };
+    //   setChats([newChat, ...chats]);
+    //   setCurrentChat(newChat);
+    // };
+
+    console.log("checkpoint 1.....", currentChat)
     // Create a new chat if none exists
-    if (!targetChat) {
-      const newChatId = Date.now();
-      const newChat: Chat = {
-        id: newChatId,
-        title: `New Chat ${chats.length + 1}`,
-        messages: [],
-      };
-      setChats((prevChats) => [newChat, ...prevChats]);
-      setCurrentChat(newChat);
-      targetChat = newChat;
-    }
-  
+    // Use the ref here
+  let targetChat = currentChatRef.current;
+
+  // Create a new chat if none exists
+  if (!targetChat) {
+    const newChat: Chat = {
+      id: Date.now(),
+      title: `New Chat ${chats.length + 1}`,
+      messages: [],
+    };
+    setChats((prevChats) => [newChat, ...prevChats]);
+    setCurrentChat(newChat);
+    currentChatRef.current = newChat; // update the ref as well
+    targetChat = newChat;
+  }
+    console.log("checkpoint 2.....", currentChat)
+
     const userMessage: Message = {
       id: Date.now(),
       content: finalMessage,
@@ -233,21 +257,18 @@ export default function Main() {
       }
     });
     setCurrentChat(updatedChat);
-  
-    try {
-      const response = await fetch("http://localhost:3002/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: finalMessage }),
-      });
-  
-      if (!response.ok) throw new Error("Failed to fetch AI response");
-  
-      const data = await response.json();
-  
+    
+    console.log("checkpoint 3.....", currentChat)
+
+    // await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    try{
+      const reply = await getAiResponse(finalMessage)
+
+      console.log("Ai Response...",reply)
       const aiMessage: Message = {
         id: Date.now(),
-        content: data.reply,
+        content: reply,
         sender: "ai",
       };
   
@@ -265,7 +286,7 @@ export default function Main() {
       setCurrentChat(chatWithAiResponse);
       // console.log(isToSpeak)
       if(isToSpeak){
-        speakText(data.reply)
+        speakText(reply)
       }
     } catch (error) {
       console.error("Error fetching AI response:", error);
@@ -301,6 +322,7 @@ export default function Main() {
         recognitionRef.current.start();
         setIsListening(true);
         setIsVoice(true);
+        console.log("checkpoint startlistening....", currentChat)
         console.log("At end of startListening...........");
       }
     } catch (error) {
@@ -329,8 +351,10 @@ export default function Main() {
     let pauseTimeoutId: ReturnType<typeof setTimeout>;
     let stopTimeoutId: ReturnType<typeof setTimeout>;
     let lastSentTranscript = "";
+    console.log("checkpoint useeffect....", currentChat)
   
     recognitionRef.current.onresult = (event) => {
+      console.log("checkpoint recognitionRef.current.onresult....", currentChat)
       if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
       if (stopTimeoutId) clearTimeout(stopTimeoutId);
   
