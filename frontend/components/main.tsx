@@ -484,7 +484,6 @@ export default function Main() {
 
         {/* Bottom Actions */}
         <div className="p-4 border-t space-y-2">
-          <Separator />
           <Button
             variant="ghost"
             className="w-full justify-start gap-2 text-muted-foreground"
@@ -522,6 +521,7 @@ export default function Main() {
         </header>
 
         {/* Chat Area */}
+        <ScrollArea className="flex-1 px-2">
         <main className="flex-1 p-6 overflow-auto">
           <div className="max-w-3xl mx-auto space-y-4">
             {currentChat ? (
@@ -550,7 +550,8 @@ export default function Main() {
             )}
           </div>
         </main>
-
+        </ScrollArea>
+        
         {/* Chat Input */}
         <div className="p-4 border-t transition-all duration-500 ease-in-out">
           <div className="flex space-x-2 max-w-3xl mx-auto transition-all duration-500 ease-in-out">
