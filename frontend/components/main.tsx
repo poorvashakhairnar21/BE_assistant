@@ -569,7 +569,10 @@ export default function Main() {
                   sendMessage();
                 }
               }}
-              className="flex-1"
+              className={`flex-1 ${
+                isListening || isSpeaking ? "cursor-not-allowed" : ""
+                }`}
+              readOnly={(isListening || isSpeaking)}
             />
             {!isListening && !isSpeaking && (
               <Button
