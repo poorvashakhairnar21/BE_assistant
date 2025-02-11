@@ -559,7 +559,7 @@ export default function Main() {
                 isListening
                   ? "Listening......."
                   : isSpeaking
-                  ? "Speaking........."
+                  ? "responding........."
                   : "Type your message here......"
               }
               value={inputMessage}
