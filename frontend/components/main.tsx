@@ -76,9 +76,9 @@ export default function Main() {
     }
   };
 
-  const handleSignup = async (email: string, password: string) => {
+  const handleSignup = async (email: string,token: string) => {
     try {
-      const token = await signup(email, password);
+      // const token = await signup(email, password);
       localStorage.setItem("token", token);
       localStorage.setItem("userEmail", email);
       setUser(email);

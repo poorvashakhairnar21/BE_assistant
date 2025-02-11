@@ -21,17 +21,28 @@ export async function login(email: string, password: string): Promise<string> {
   }
 }
 
-export async function signup(email: string, password: string): Promise<string> {
+export async function signup(email: string, password: string): Promise<void> {
   try {
-    const response = await axios.post(`${API_URL}/signup`, { email, password });
-    const token = response.data.token;
-    localStorage.setItem("token", token); // Store token persistently
-    return token;
+    await axios.post(`${API_URL}/signup`, { email, password })
   } catch (error: any) {
     if (error.response?.status === 403) {
-      throw new Error(error.response.data.error);
+      throw new Error(error.response.data.error)
     }
-    throw new Error("An unknown error occurred. Please try again later.");
+    throw new Error("An unknown error occurred. Please try again later.")
+  }
+}
+
+export async function verifyOTP(email: string, otp: string): Promise<string> {
+  try {
+    const response = await axios.post(`${API_URL}/verify-otp`, { email, otp })
+    const token = response.data.token
+    localStorage.setItem("token", token) // Store token persistently
+    return token
+  } catch (error: any) {
+    if ([400, 404].includes(error.response?.status)) {
+      throw new Error(error.response.data.error)
+    }
+    throw new Error("An unknown error occurred. Please try again later.")
   }
 }
 
