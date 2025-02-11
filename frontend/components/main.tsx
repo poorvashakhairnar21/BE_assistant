@@ -51,12 +51,13 @@ export default function Main() {
   const [editTitle, setEditTitle] = useState("");
   const [showLogin, setShowLogin] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [isVoice, setIsVoice] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const synthRef = useRef<window.speechSynthesis | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const transcriptRef = useRef("");
+  const forceStopRecognitionRef = useRef(false)
   const currentChatRef = useRef<Chat | null>(null);
   const [theme, setTheme] = useDarkMode();
 
@@ -187,16 +188,33 @@ export default function Main() {
     utteranceRef.current.pitch = 1;
     
     synthRef.current.speak(utteranceRef.current);
+    console.log("start speaking.........")
   };
 
   const stopSpeakingText = () => {
       synthRef.current.cancel();
+      setIsSpeaking(false)
+      if (forceStopRecognitionRef.current) {
+        forceStopRecognitionRef.current = false;
+        console.log("stop speaking force.........")
+      }
   };
   
   useEffect(()=>{
     synthRef.current = window.speechSynthesis;
     utteranceRef.current = new SpeechSynthesisUtterance();
-  })
+
+    utteranceRef.current.onend = () => {
+      setIsSpeaking(false)
+      if (forceStopRecognitionRef.current) {
+        forceStopRecognitionRef.current = false;
+        console.log("stop speaking force.........")
+      } else {
+        startListening();
+        console.log("stop speaking.........")
+      }
+    };
+  },[])
 
   // send massage section .......................................................................................
 
@@ -290,6 +308,7 @@ export default function Main() {
       );
     } finally {
       setInputMessage("");
+      transcriptRef.current = "";
     }
   };
 
@@ -300,8 +319,7 @@ export default function Main() {
       if (recognitionRef.current) {
         recognitionRef.current.start();
         setIsListening(true);
-        setIsVoice(true);
-        console.log("At end of startListening...........");
+        console.log("start startListening...........");
       }
     } catch (error) {
       console.error("Speech recognition error:", error);
@@ -311,7 +329,6 @@ export default function Main() {
   const stopListening = () => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
-      console.log("At end of stopListening...........");
     }
   };
 
@@ -328,28 +345,23 @@ export default function Main() {
   
     let pauseTimeoutId: ReturnType<typeof setTimeout>;
     let stopTimeoutId: ReturnType<typeof setTimeout>;
-    let lastSentTranscript = "";
   
     recognitionRef.current.onresult = (event) => {
       if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
       if (stopTimeoutId) clearTimeout(stopTimeoutId);
   
-      let fullTranscript = Array.from(event.results)
+      transcriptRef.current = Array.from(event.results)
         .map((result) => result[0].transcript)
         .join("");
-  
-      let newTranscript = fullTranscript.replace(lastSentTranscript, "").trim();
-  
-      transcriptRef.current = newTranscript;
-      setInputMessage(newTranscript);
-  
+
+      setInputMessage(transcriptRef.current)
+
       pauseTimeoutId = setTimeout(() => {
-        if (newTranscript) {
-          setIsListening(false);
-          sendMessage(newTranscript,true);
+        if (transcriptRef.current) {
+          setIsSpeaking(true);
+          stopListening();
+          sendMessage(transcriptRef.current,true);
           // setInputMessage("");
-          lastSentTranscript = fullTranscript;
-          transcriptRef.current = "";
         }
       }, 1000);
   
@@ -358,10 +370,8 @@ export default function Main() {
       }, 30000);
     };
     recognitionRef.current.onend = () => {
-      setIsVoice(false);
-      stopSpeakingText()
       setIsListening(false);
-      console.log("Speech recognition stopped...");
+      console.log("stop listining...");
     };
     return () => {
       if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
@@ -369,6 +379,16 @@ export default function Main() {
     };
   }, []);  
 
+  // other updates...................................................................
+  const forceStopRecognition = () =>{
+    forceStopRecognitionRef.current = true;
+    stopListening();
+    stopSpeakingText();
+  }
+
+  const forceStartRecognition = () =>{
+    startListening();
+  }
   if (loading) {
     return <div></div>;
   }
@@ -535,7 +555,13 @@ export default function Main() {
         <div className="p-4 border-t transition-all duration-500 ease-in-out">
           <div className="flex space-x-2 max-w-3xl mx-auto transition-all duration-500 ease-in-out">
             <Input
-              placeholder="Type your message here..."
+              placeholder={
+                isListening
+                  ? "Listening......."
+                  : isSpeaking
+                  ? "Speaking........."
+                  : "Type your message here......"
+              }
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={(e) => {
@@ -545,7 +571,7 @@ export default function Main() {
               }}
               className="flex-1"
             />
-            {!isVoice && (
+            {!isListening && !isSpeaking && (
               <Button
                 className="bg-purple-600 hover:bg-purple-700 text-white"
                 onClick={() => sendMessage()}
@@ -553,26 +579,26 @@ export default function Main() {
                 <Send className="h-4 w-4" />
               </Button>
             )}
-            {isVoice && (
+            {(isListening || isSpeaking) && (
               <Button
                 className="bg-purple-600 hover:bg-purple-700 text-white"
                 onClick={() => {
-                  stopListening();
+                  forceStopRecognition();
                 }}
               >
                 <X className="h-4 w-4" />
               </Button>
             )}
-            {isVoice && (
+            {(isListening || isSpeaking) && (
               <div>
                 <img className="h-10 w-20" src="/voice-line.gif" alt="voice line GIF" />
               </div>
             )}
-            {!isVoice && (
+            {!isListening && !isSpeaking && (
               <div className="h-10 w-20">
                 <button
                   onClick={() => {
-                    startListening();
+                    forceStartRecognition();
                   }}
                 >
                   <img src="./voice-ai.png" className="h-10 w-10 bg-transparent" alt="voice ai" />

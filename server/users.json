@@ -4,195 +4,53 @@
     "password": "$2b$10$BJ/zvQ1yHU1U9yBhakVqO.QbBcHH7tUSaoI0lJJySAl19ROJRew7G",
     "chats": [
       {
-        "id": 1739172392087,
+        "id": 1739252975589,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739172392087,
-            "content": "how are you",
+            "id": 1739252975589,
+            "content": "hey there how are you",
             "sender": "user"
           },
           {
-            "id": 1739172392672,
-            "content": "how are you",
-            "sender": "ai"
-          },
-          {
-            "id": 1739172396250,
-            "content": "how are you",
-            "sender": "user"
-          },
-          {
-            "id": 1739172396261,
-            "content": "how are you",
-            "sender": "ai"
-          },
-          {
-            "id": 1739172399658,
-            "content": "how are you",
-            "sender": "user"
-          },
-          {
-            "id": 1739172400225,
-            "content": "how are you",
-            "sender": "ai"
-          },
-          {
-            "id": 1739172403552,
-            "content": "how are you",
-            "sender": "user"
-          },
-          {
-            "id": 1739172403563,
-            "content": "how are you",
+            "id": 1739252976154,
+            "content": "hey there how are you",
             "sender": "ai"
           }
         ]
       },
       {
-        "id": 1739172107981,
+        "id": 1739252622984,
         "title": "New Chat 1",
         "messages": [
           {
-            "id": 1739172107981,
-            "content": "hey there how are you",
+            "id": 1739252622984,
+            "content": "hey there how are you hello hello hello",
             "sender": "user"
           },
           {
-            "id": 1739172108295,
-            "content": "hey there how are you",
+            "id": 1739252623558,
+            "content": "hey there how are you hello hello hello",
             "sender": "ai"
           },
           {
-            "id": 1739172126222,
-            "content": "listening",
+            "id": 1739252638194,
+            "content": "hey there how are you hello hello hello",
             "sender": "user"
           },
           {
-            "id": 1739172126534,
-            "content": "listening",
+            "id": 1739252638517,
+            "content": "hey there how are you hello hello hello",
             "sender": "ai"
           },
           {
-            "id": 1739172132578,
-            "content": "are you listening",
+            "id": 1739252648660,
+            "content": "there how are you hello hello",
             "sender": "user"
           },
           {
-            "id": 1739172132900,
-            "content": "are you listening",
-            "sender": "ai"
-          }
-        ]
-      },
-      {
-        "id": 1739172076288,
-        "title": "New Chat 2",
-        "messages": [
-          {
-            "id": 1739172076288,
-            "content": "hii",
-            "sender": "user"
-          },
-          {
-            "id": 1739172076303,
-            "content": "hii",
-            "sender": "ai"
-          },
-          {
-            "id": 1739172082658,
-            "content": "hey there how are you",
-            "sender": "user"
-          },
-          {
-            "id": 1739172083229,
-            "content": "hey there how are you",
-            "sender": "ai"
-          },
-          {
-            "id": 1739172090773,
-            "content": "nice",
-            "sender": "user"
-          },
-          {
-            "id": 1739172091088,
-            "content": "nice",
-            "sender": "ai"
-          },
-          {
-            "id": 1739172096673,
-            "content": "okay let's play cricket",
-            "sender": "user"
-          },
-          {
-            "id": 1739172096986,
-            "content": "okay let's play cricket",
-            "sender": "ai"
-          }
-        ]
-      },
-      {
-        "id": 1739172013419,
-        "title": "New Chat 1",
-        "messages": [
-          {
-            "id": 1739172013419,
-            "content": "hii",
-            "sender": "user"
-          },
-          {
-            "id": 1739172018998,
-            "content": "hii",
-            "sender": "ai"
-          },
-          {
-            "id": 1739172021919,
-            "content": "hello",
-            "sender": "user"
-          },
-          {
-            "id": 1739172027257,
-            "content": "hello",
-            "sender": "ai"
-          },
-          {
-            "id": 1739172033571,
-            "content": "hey there how are you",
-            "sender": "user"
-          },
-          {
-            "id": 1739172038888,
-            "content": "hey there how are you",
-            "sender": "ai"
-          },
-          {
-            "id": 1739172046130,
-            "content": "what are you doing",
-            "sender": "user"
-          },
-          {
-            "id": 1739172051456,
-            "content": "what are you doing",
-            "sender": "ai"
-          },
-          {
-            "id": 1739172055407,
-            "content": "what are you doing",
-            "sender": "user"
-          },
-          {
-            "id": 1739172061722,
-            "content": "what are you doing",
-            "sender": "ai"
-          },
-          {
-            "id": 1739172066414,
-            "content": "what are you doing",
-            "sender": "user"
-          },
-          {
-            "id": 1739172071728,
-            "content": "what are you doing",
+            "id": 1739252648975,
+            "content": "there how are you hello hello",
             "sender": "ai"
           }
         ]
