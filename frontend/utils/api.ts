@@ -22,10 +22,17 @@ export async function login(email: string, password: string): Promise<string> {
 }
 
 export async function signup(email: string, password: string): Promise<string> {
-  const response = await axios.post(`${API_URL}/signup`, { email, password });
-  const token = response.data.token;
-  localStorage.setItem("token", token); // Store token persistently
-  return token;
+  try {
+    const response = await axios.post(`${API_URL}/signup`, { email, password });
+    const token = response.data.token;
+    localStorage.setItem("token", token); // Store token persistently
+    return token;
+  } catch (error: any) {
+    if (error.response?.status === 403) {
+      throw new Error(error.response.data.error);
+    }
+    throw new Error("An unknown error occurred. Please try again later.");
+  }
 }
 
 // Verify token with backend

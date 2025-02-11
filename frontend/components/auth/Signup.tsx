@@ -10,10 +10,16 @@ interface SignupProps {
 export function Signup({ onSignup, onSwitchToLogin }: SignupProps) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onSignup(email, password)
+    setError(null) // Reset error before a new attempt
+    try {
+      await onSignup(email, password)
+    } catch (err: any) {
+      setError(err.message) // Set error message
+    }
   }
 
   return (
@@ -26,6 +32,7 @@ export function Signup({ onSignup, onSwitchToLogin }: SignupProps) {
         onChange={(e) => setPassword(e.target.value)}
         required
       />
+      {error && <p className="text-red-500 text-sm">{error}</p>} {/* Error Message */}
       <Button type="submit" className="w-full">
         Sign Up
       </Button>

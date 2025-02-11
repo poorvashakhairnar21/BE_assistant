@@ -83,7 +83,7 @@ export default function Main() {
       localStorage.setItem("userEmail", email);
       setUser(email);
     } catch (error) {
-      console.error("Signup failed:", error);
+      throw error;
     }
   };
 

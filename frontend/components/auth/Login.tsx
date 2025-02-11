@@ -18,7 +18,6 @@ export function Login({ onLogin, onSwitchToSignup }: LoginProps) {
     try {
       await onLogin(email, password)
     } catch (err: any) {
-      // console.error("Login error:", err.message) // Debugging
       setError(err.message) // Set error message
     }
   }
