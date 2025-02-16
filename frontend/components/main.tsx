@@ -206,13 +206,23 @@ export default function Main() {
 
     utteranceRef.current.onend = () => {
       setIsSpeaking(false)
-      if (forceStopRecognitionRef.current) {
-        forceStopRecognitionRef.current = false;
-        console.log("stop speaking force.........")
-      } else {
-        startListening();
-        console.log("stop speaking.........")
-      }
+      setTimeout(() => { // Add 500ms buffer
+        if (forceStopRecognitionRef.current) {
+          forceStopRecognitionRef.current = false;
+          console.log("stop speaking force.........")
+        } else {
+          console.log("stop speaking.........")
+          startListening();
+        }
+      }, 500);
+      
+    };
+    utteranceRef.current.onerror = (error) => {
+      console.error('Speech synthesis error:', error);
+      setIsSpeaking(false);
+    };
+    return () => {
+      if (synthRef.current?.speaking) synthRef.current.cancel();
     };
   },[])
 
@@ -376,6 +386,7 @@ export default function Main() {
     return () => {
       if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
       if (stopTimeoutId) clearTimeout(stopTimeoutId);
+      if (recognitionRef.current) recognitionRef.current.stop();
     };
   }, []);  
 
@@ -386,9 +397,10 @@ export default function Main() {
     stopSpeakingText();
   }
 
-  const forceStartRecognition = () =>{
-    startListening();
-  }
+  const forceStartRecognition = () => {
+    if (!isListening && !isSpeaking) startListening();
+  };
+
   if (loading) {
     return <div></div>;
   }
