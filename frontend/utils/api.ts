@@ -86,4 +86,4 @@ export async function updateChats(chats: any[]): Promise<void> {
     { headers: { Authorization: `Bearer ${token}` } }
   );
 }
-git checkout -b fix-issue-1-and-2
+
