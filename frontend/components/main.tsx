@@ -99,13 +99,20 @@ export default function Main() {
     const checkAuth = async () => {
       const token = localStorage.getItem("token");
       const storedUser = localStorage.getItem("userEmail");
-
+  
       if (token && storedUser) {
         try {
           const isValid = await validateToken(token);
           if (isValid) {
             setUser(storedUser);
-            loadUserChats();
+  
+            // Load chats from localStorage if they exist
+            const savedChats = localStorage.getItem("chats");
+            if (savedChats) {
+              setChats(JSON.parse(savedChats));
+            } else {
+              loadUserChats();
+            }
           } else {
             handleLogout();
           }
@@ -118,8 +125,26 @@ export default function Main() {
       }
       setLoading(false);
     };
+  
     checkAuth();
   }, []);
+  
+  useEffect(() => {
+    if (currentChat) {
+      localStorage.setItem("currentChatId", currentChat.id.toString());
+    }
+  }, [currentChat]);
+  
+  useEffect(() => {
+    const lastChatId = localStorage.getItem("currentChatId");
+    if (lastChatId) {
+      const chat = chats.find((chat) => chat.id === parseInt(lastChatId, 10));
+      if (chat) {
+        setCurrentChat(chat);
+      }
+    }
+  }, [chats]);
+  
 
   // chats handling section..........................................................................
 
@@ -138,8 +163,8 @@ export default function Main() {
       title: `New Chat ${chats.length + 1}`,
       messages: [],
     };
-    setChats([newChat, ...chats]);
     setCurrentChat(newChat);
+    setChats([newChat, ...chats]);
   };
 
   const handleRenameChat = (chatId: number) => {
@@ -171,8 +196,10 @@ export default function Main() {
   useEffect(() => {
     if (user) {
       updateChats(chats);
+      localStorage.setItem("chats", JSON.stringify(chats));
     }
-  }, [user, chats]);
+  }, [chats]);
+  
 
   useEffect(() => {
     currentChatRef.current = currentChat;
