@@ -66,6 +66,7 @@ export default function Main() {
 
   const handleLogin = async (email: string, password: string) => {
     try {
+      localStorage.clear();
       const token = await login(email, password);
       localStorage.setItem("token", token);
       localStorage.setItem("userEmail", email);
@@ -79,6 +80,7 @@ export default function Main() {
   const handleSignup = async (email: string,token: string) => {
     try {
       // const token = await signup(email, password);
+      localStorage.clear();
       localStorage.setItem("token", token);
       localStorage.setItem("userEmail", email);
       setUser(email);
@@ -88,6 +90,7 @@ export default function Main() {
   };
 
   const handleLogout = () => {
+    localStorage.clear();
     localStorage.removeItem("token");
     localStorage.removeItem("userEmail");
     setUser(null);
