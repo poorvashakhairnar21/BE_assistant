@@ -39,6 +39,7 @@ export default function Main() {
   const forceStopRecognitionRef = useRef(false)
   const currentChatRef = useRef<Chat | null>(null)
   const [theme, setTheme] = useDarkMode()
+  const stopTimeoutIdRef = useRef<NodeJS.Timeout | null>(null)
 
   // Speech recognition setup with react-speech-recognition
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition()
@@ -187,37 +188,6 @@ export default function Main() {
   useEffect(() => {
     currentChatRef.current = currentChat
   }, [currentChat])
-
-  // Update input message when transcript changes
-  useEffect(() => {
-    if (transcript) {
-      setInputMessage(transcript)
-    }
-  }, [transcript])
-
-  // Auto-send message after a pause in speech
-  useEffect(() => {
-    let pauseTimeoutId: NodeJS.Timeout
-    let stopTimeoutId: NodeJS.Timeout
-
-    if (listening && transcript) {
-      pauseTimeoutId = setTimeout(() => {
-        if (transcript.trim()) {
-          stopListening()
-          sendMessage(transcript, true)
-        }
-      }, 2000) // 1 second pause triggers send (matching original)
-
-      stopTimeoutId = setTimeout(() => {
-        stopListening()
-      }, 30000) // 30 second max listening time (matching original)
-    }
-
-    return () => {
-      if (pauseTimeoutId) clearTimeout(pauseTimeoutId)
-      if (stopTimeoutId) clearTimeout(stopTimeoutId)
-    }
-  }, [transcript, listening])
 
   // speech synthesis, text to speech section.............................................................
 
@@ -372,6 +342,39 @@ export default function Main() {
       console.log("stop listening...........")
     }
   }
+
+  // Update input message when transcript changes
+  useEffect(() => {
+    if (transcript) {
+      setInputMessage(transcript)
+    }
+  }, [transcript])
+
+  // Auto-send message after a pause in speech
+  useEffect(() => {
+    let pauseTimeoutId: NodeJS.Timeout
+  
+    if (listening && transcript) {
+      pauseTimeoutId = setTimeout(() => {
+        if (transcript.trim()) {
+          stopListening()
+          sendMessage(transcript, true)
+        }
+      }, 2000) // 2 second pause triggers send
+  
+      if (!stopTimeoutIdRef.current) {
+        stopTimeoutIdRef.current = setTimeout(() => {
+          stopListening()
+          stopTimeoutIdRef.current = null
+        }, 30000) // 30 second max listening time
+      }
+    }
+  
+    return () => {
+      clearTimeout(pauseTimeoutId)
+    }
+  }, [transcript, listening])
+
 
   // other updates...................................................................
   const forceStopRecognition = () => {
