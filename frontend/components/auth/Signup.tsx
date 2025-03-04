@@ -38,16 +38,25 @@ export function Signup({ onSignup, onSwitchToLogin }: SignupProps) {
       try {
         await signup(email, password)
         setIsOtpSent(true)
-      } catch (err: any) {
-        setError(err.message)
-      }
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message)
+        } else {
+          setError("An unexpected error occurred")
+        }
+      }      
     } else {
       try {
         const token = await verifyOTP(email, otp)
         onSignup(email, token)
-      } catch (err: any) {
-        setError(err.message)
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message)
+        } else {
+          setError("An unexpected error occurred")
+        }
       }
+      
     }
     setLoading(false) // Reset loading state after operation
   }

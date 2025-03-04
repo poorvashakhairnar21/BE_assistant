@@ -3,7 +3,11 @@ import { useEffect, useState } from "react";
 const useDarkMode = () => {
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      const storedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+      if (storedTheme === "light" || storedTheme === "dark") {
+        return storedTheme;
+      }
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     }
     return "light"; // Default theme for SSR
   });
