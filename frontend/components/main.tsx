@@ -191,10 +191,10 @@ export default function Main() {
   };
 
   const deleteChat = (chatId: number) => {
-    forceStopRecognition()
     setChats(chats.filter((chat) => chat.id !== chatId));
     if (currentChat && currentChat.id === chatId) {
       setCurrentChat(null);
+      forceStopRecognition()
     }
   };
 
