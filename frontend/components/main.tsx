@@ -161,6 +161,7 @@ export default function Main() {
   };
 
   const createNewChat = () => {
+    forceStopRecognition()
     const newChat: Chat = {
       id: Date.now(),
       title: `New Chat ${chats.length + 1}`,
@@ -190,6 +191,7 @@ export default function Main() {
   };
 
   const deleteChat = (chatId: number) => {
+    forceStopRecognition()
     setChats(chats.filter((chat) => chat.id !== chatId));
     if (currentChat && currentChat.id === chatId) {
       setCurrentChat(null);
