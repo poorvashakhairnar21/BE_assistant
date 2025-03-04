@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next export",
+    "serve": "npx serve out"
   },
   "dependencies": {
     "@radix-ui/react-scroll-area": "^1.2.2",
@@ -32,6 +34,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-speech-kit": "^3.0.0",
+    "@types/react-speech-recognition": "^3.9.6",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
