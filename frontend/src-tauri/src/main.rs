@@ -4,7 +4,7 @@ use std::sync::{Arc, Mutex};
 use tauri::Manager;
 
 fn start_python_server() -> (Option<u16>, Child) {
-    let mut child = Command::new("bin/server") // Use the bundled executable
+    let mut child = Command::new("bin/zoroServer") // Use the bundled executable
         .stdout(Stdio::piped()) // Capture output
         .stderr(Stdio::piped()) // Capture errors for debugging
         .spawn()
