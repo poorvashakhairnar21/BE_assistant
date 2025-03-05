@@ -8,12 +8,16 @@
     "start": "next start",
     "lint": "next lint",
     "export": "next export",
-    "serve": "npx serve out"
+    "serve": "npx serve out",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "dependencies": {
     "@radix-ui/react-scroll-area": "^1.2.2",
     "@radix-ui/react-separator": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.1",
+    "@tauri-apps/cli": "^2.3.1",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
