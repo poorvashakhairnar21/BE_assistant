@@ -131,3 +131,58 @@ dist
 
 # Replit debugger
 .breakpoints
+
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnp
+.pnp.js
+
+# Tauri build artifacts
+/src-tauri/target/
+src-tauri/Cargo.lock
+/src-tauri/bundler.json
+
+# Rust specific
+**/*.rs.bk
+**/*.rs.swp
+/.cargo
+/cargo-target
+/.rustup
+
+# Output binaries
+/src-tauri/target/
+src-tauri/bundler.json
+src-tauri/src-tauri.exe
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.iml
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+/src-tauri/.env
+/src-tauri/.env.local
+/src-tauri/.env.*.local
+
+# Build artifacts
+dist/
+out/
+.taura-build/
