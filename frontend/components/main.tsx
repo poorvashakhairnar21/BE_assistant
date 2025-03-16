@@ -1,8 +1,8 @@
 "use client"
 
-import 'regenerator-runtime/runtime';
+import "regenerator-runtime/runtime"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { Moon, Sun, Plus, MessageSquare, Trash2, Settings, Send, Edit2, X } from 'lucide-react'
+import { Moon, Sun, Plus, MessageSquare, Trash2, Settings, Send, Edit2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -13,6 +13,17 @@ import { Login } from "@/components/auth/Login"
 import { Signup } from "@/components/auth/Signup"
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition"
 import { useSpeechSynthesis } from "react-speech-kit"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+import { ChangePassword } from "@/components/settings/change-password"
+import { ProfileSettings } from "@/components/settings/profile-settings"
+import { HelpSupport } from "@/components/settings/help-support"
 
 interface Message {
   id: number
@@ -40,6 +51,7 @@ export default function Main() {
   const currentChatRef = useRef<Chat | null>(null)
   const [theme, setTheme] = useDarkMode()
   const stopTimeoutIdRef = useRef<NodeJS.Timeout | null>(null)
+  const [activeSettingsPage, setActiveSettingsPage] = useState<string | null>(null)
 
   // Speech recognition setup with react-speech-recognition
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition()
@@ -192,36 +204,36 @@ export default function Main() {
   // speech synthesis, text to speech section.............................................................
 
   const handleSpeechEnd = () => {
-    console.log("Speech ended.");
-    setIsSpeaking(false);
-  
+    console.log("Speech ended.")
+    setIsSpeaking(false)
+
     setTimeout(() => {
       if (forceStopRecognitionRef.current) {
-        forceStopRecognitionRef.current = false;
-        console.log("Stop speaking forcefully...");
+        forceStopRecognitionRef.current = false
+        console.log("Stop speaking forcefully...")
       } else {
-        console.log("Stop speaking...");
-        startListening(); // Ensure this function exists
+        console.log("Stop speaking...")
+        startListening() // Ensure this function exists
       }
-    }, 500);
-  };
-  
-  const speakText = (text: string) => {
-    if (!text.trim()) return;
+    }, 500)
+  }
 
-    console.log("Start speaking...");
-    setIsSpeaking(true);
+  const speakText = (text: string) => {
+    if (!text.trim()) return
+
+    console.log("Start speaking...")
+    setIsSpeaking(true)
 
     // Create a SpeechSynthesisUtterance instance for better event handling
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.voice = voices[0]; // Select voice dynamically if needed
-    utterance.rate = 1; // Adjust speed
-    utterance.pitch = 1; // Adjust pitch
-    utterance.onend = handleSpeechEnd;
-    utterance.onerror = (e) => console.error("Speech Error:", e);
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.voice = voices[0] // Select voice dynamically if needed
+    utterance.rate = 1 // Adjust speed
+    utterance.pitch = 1 // Adjust pitch
+    utterance.onend = handleSpeechEnd
+    utterance.onerror = (e) => console.error("Speech Error:", e)
 
-    window.speechSynthesis.speak(utterance);
-  };
+    window.speechSynthesis.speak(utterance)
+  }
 
   const stopSpeakingText = () => {
     cancel()
@@ -326,7 +338,7 @@ export default function Main() {
 
   const startListening = () => {
     console.log(listening, isSpeaking)
-    // if (!listening && !isSpeaking && browserSupportsSpeechRecognition) 
+    // if (!listening && !isSpeaking && browserSupportsSpeechRecognition)
     if (!isSpeaking && browserSupportsSpeechRecognition) {
       resetTranscript()
       SpeechRecognition.startListening({ continuous: true })
@@ -353,7 +365,7 @@ export default function Main() {
   // Auto-send message after a pause in speech
   useEffect(() => {
     let pauseTimeoutId: NodeJS.Timeout
-  
+
     if (listening && transcript) {
       pauseTimeoutId = setTimeout(() => {
         if (transcript.trim()) {
@@ -361,7 +373,7 @@ export default function Main() {
           sendMessage(transcript, true)
         }
       }, 2000) // 2 second pause triggers send
-  
+
       if (!stopTimeoutIdRef.current) {
         stopTimeoutIdRef.current = setTimeout(() => {
           stopListening()
@@ -369,12 +381,11 @@ export default function Main() {
         }, 30000) // 30 second max listening time
       }
     }
-  
+
     return () => {
       clearTimeout(pauseTimeoutId)
     }
   }, [transcript, listening])
-
 
   // other updates...................................................................
   const forceStopRecognition = () => {
@@ -422,6 +433,19 @@ export default function Main() {
         </div>
       </div>
     )
+  }
+
+  if (activeSettingsPage) {
+    switch (activeSettingsPage) {
+      case "change-password":
+        return <ChangePassword onBack={() => setActiveSettingsPage(null)} />
+      case "profile-settings":
+        return <ProfileSettings onBack={() => setActiveSettingsPage(null)} />
+      case "help-support":
+        return <HelpSupport onBack={() => setActiveSettingsPage(null)} />
+      default:
+        return null
+    }
   }
 
   return (
@@ -481,13 +505,26 @@ export default function Main() {
 
         {/* Bottom Actions */}
         <div className="p-4 border-t space-y-2">
-          <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
-            <Settings className="w-4 h-4" />
-            Settings
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground" onClick={handleLogout}>
-            Logout
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
+                <Settings className="w-4 h-4" />
+                Settings
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuItem onClick={() => setActiveSettingsPage("change-password")}>
+                Change Password
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setActiveSettingsPage("profile-settings")}>
+                Profile Settings
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setActiveSettingsPage("help-support")}>Help & Support</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -549,8 +586,8 @@ export default function Main() {
                 listening
                   ? "Listening......."
                   : isSpeaking || speaking
-                  ? "responding........."
-                  : "Type your message here......"
+                    ? "responding........."
+                    : "Type your message here......"
               }
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
@@ -597,3 +634,4 @@ export default function Main() {
     </div>
   )
 }
+

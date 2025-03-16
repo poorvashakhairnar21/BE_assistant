@@ -64,6 +64,26 @@ export async function verifyOTP(email: string, otp: string): Promise<string> {
   }
 }
 
+export async function changePassword(currentPassword: string, newPassword: string): Promise<string> {
+  const token = getToken();
+  if (!token) throw new Error("No token found");
+
+  try {
+    const response = await axios.post(
+      `${BACKEND_API_URL}/change-password`,
+      { currentPassword, newPassword },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.error);
+    }
+    throw new Error("Failed to change password.");
+  }
+}
+
+
 // Verify token with backend
 export async function validateToken(): Promise<string | null> {
   const token = getToken();
