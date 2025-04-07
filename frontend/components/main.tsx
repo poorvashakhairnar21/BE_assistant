@@ -270,10 +270,16 @@ export default function Main() {
       sender: "user",
     }
 
+    const aiMessage: Message = {
+      id: Date.now()+10,
+      content: "Responding.........",
+      sender: "ai",
+    }
+
     // Update the chat with the user's message
     const updatedChat = {
       ...targetChat,
-      messages: [...targetChat.messages, userMessage],
+      messages: [...targetChat.messages, userMessage, aiMessage],
     }
 
     setChats((prevChats) => {
@@ -285,11 +291,22 @@ export default function Main() {
       }
     })
     setCurrentChat(updatedChat)
+    setInputMessage("")
 
     try {
-      const reply = await getAiResponse(finalMessage)
 
-      const aiMessage: Message = {
+      const lastThreePairs = currentChat.messages.slice(-6); // Last 6 messages = 3 pairs
+      const previousChatPairs = [];
+
+      for (let i = 0; i < lastThreePairs.length; i += 2) {
+        const userMsg = lastThreePairs[i];
+        const aiMsg = lastThreePairs[i + 1];
+        previousChatPairs.push({ user: userMsg.content, ai: aiMsg.content });
+      }
+      
+      const reply = await getAiResponse(finalMessage, previousChatPairs)
+      
+      const newAiMessage: Message = {
         id: Date.now(),
         content: reply,
         sender: "ai",
@@ -298,7 +315,7 @@ export default function Main() {
       // Add AI response to the chat
       const chatWithAiResponse = {
         ...updatedChat,
-        messages: [...updatedChat.messages, aiMessage],
+        messages: [...updatedChat.messages.slice(0, -1), newAiMessage],
       }
 
       setChats((prevChats) => prevChats.map((chat) => (chat.id === targetChat.id ? chatWithAiResponse : chat)))
@@ -315,11 +332,13 @@ export default function Main() {
           chat.id === targetChat.id
             ? {
                 ...chat,
-                messages: chat.messages.filter((msg) => msg.id !== userMessage.id),
+                messages: chat.messages.filter(
+                  (msg) => msg.id !== userMessage.id && msg.id !== aiMessage.id
+                ),
               }
-            : chat,
-        ),
-      )
+            : chat
+        )
+      );      
       setCurrentChat((prevChat) =>
         prevChat && prevChat.id === targetChat.id
           ? {
