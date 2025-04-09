@@ -13,6 +13,7 @@ import { Login } from "@/components/auth/Login"
 import { Signup } from "@/components/auth/Signup"
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition"
 import { useSpeechSynthesis } from "react-speech-kit"
+import MarkdownMessage from "@/components/MarkdownMessage"; // adjust path if needed
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -636,10 +637,16 @@ export default function Main() {
                   >
                     <div
                       className={`max-w-md p-3 rounded-lg ${
-                        message.sender === "user" ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-800"
+                        message.sender === "user"
+                          ? "bg-purple-600 text-white"
+                          : "bg-gray-200 text-gray-800"
                       }`}
                     >
-                      {message.content}
+                      {message.sender === "user" ? (
+                        <p>{message.content}</p>
+                      ) : (
+                        <MarkdownMessage content={message.content} isDarkMode={theme === "dark"} />
+                      )}
                     </div>
                   </div>
                 ))
