@@ -636,11 +636,7 @@ export default function Main() {
                     className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-md p-3 rounded-lg ${
-                        message.sender === "user"
-                          ? "bg-purple-600 text-white"
-                          : "bg-gray-200 text-gray-800"
-                      }`}
+                      className={`${message.sender === "user" ? "max-w-xl" : "max-w-2xl"} p-3 rounded-lg text-sm`}
                     >
                       {message.sender === "user" ? (
                         <p>{message.content}</p>

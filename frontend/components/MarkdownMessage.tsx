@@ -65,34 +65,34 @@ const MarkdownMessage = ({ content, isDarkMode }: MarkdownMessageProps) => {
 
         // Code blocks
         code({ inline, className, children, ...props }) {
-            const match = /language-(\w+)/.exec(className || "");
-          
-            if (inline) {
-              return (
-                <code
-                  className="px-1.5 py-0.5 rounded font-mono text-sm bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
-                  {...props}
-                >
+          const match = /language-(\w+)/.exec(className || "");
+        
+          if (inline) {
+            return (
+              <code
+                className="px-1.5 py-0.5 rounded font-mono text-sm bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+                {...props}
+              >
+                {children}
+              </code>
+            );
+          }
+        
+          return (
+            <div className="my-4 rounded-lg overflow-hidden">
+              {/* Language label with grey background */}
+              <div className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-4 py-1.5 font-mono uppercase tracking-wide">
+                {match ? match[1] : "code"}
+              </div>
+              {/* Code block */}
+              <pre className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-sm overflow-x-auto m-0 p-4 rounded-b-lg">
+                <code className="font-mono whitespace-pre" {...props}>
                   {children}
                 </code>
-              );
-            }
-          
-            return (
-              <div className="my-4 rounded-lg overflow-hidden">
-                {/* Language label bar with always black background */}
-                <div className="bg-black text-white text-xs px-4 py-1.5 font-mono uppercase tracking-wide">
-                  {match ? match[1] : "code"}
-                </div>
-                {/* Code block */}
-                <pre className="bg-zinc-900 dark:bg-zinc-950 text-zinc-100 text-sm overflow-x-auto m-0 p-4 rounded-b-lg">
-                  <code className="font-mono whitespace-pre" {...props}>
-                    {children}
-                  </code>
-                </pre>
-              </div>
-            );
-          },
+              </pre>
+            </div>
+          );
+        },
 
         // Images
         img: ({ node, ...props }) => (
