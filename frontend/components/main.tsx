@@ -2,7 +2,7 @@
 
 import "regenerator-runtime/runtime"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { Moon, Sun, Plus, MessageSquare, Trash2, Settings, Send, Edit2, X } from "lucide-react"
+import { Moon, Sun, Plus, MessageSquare, Trash2, Settings, Send, Edit2, X} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -41,6 +41,7 @@ export default function Main() {
   const [user, setUser] = useState<string | null>(null)
   const [chats, setChats] = useState<Chat[]>([])
   const [currentChat, setCurrentChat] = useState<Chat | null>(null)
+  const [filter, setFilter] = useState<"all" | "starred">("all");
   const [inputMessage, setInputMessage] = useState("")
   const [isEditing, setIsEditing] = useState<number | null>(null)
   const [editTitle, setEditTitle] = useState("")
@@ -151,6 +152,7 @@ export default function Main() {
     try {
       const userChats = await getChats()
       setChats(userChats)
+      console.log(userChats)
     } catch (error) {
       console.error("Failed to load chats:", error)
     }
@@ -158,13 +160,15 @@ export default function Main() {
 
   const createNewChat = () => {
     forceStopRecognition()
-    const newChat: Chat = {
-      id: Date.now(),
-      title: `New Chat ${chats.length + 1}`,
-      messages: [],
-    }
-    setCurrentChat(newChat)
-    setChats([newChat, ...chats])
+    // const newChat: Chat = {
+    //   id: Date.now(),
+    //   title: `New Chat ${chats.length + 1}`,
+    //   messages: [],
+    // }
+    setCurrentChat(null)
+    currentChatRef.current=null
+    localStorage.setItem("currentChatId", null)
+    // setChats([newChat, ...chats])
   }
 
   const handleRenameChat = (chatId: number) => {
@@ -250,6 +254,7 @@ export default function Main() {
     if (!finalMessage || finalMessage.trim() === "") return
 
     let targetChat = currentChatRef.current
+    let isFirstMassage = false
 
     // Create a new chat if none exists
     if (!targetChat) {
@@ -262,6 +267,7 @@ export default function Main() {
       setCurrentChat(newChat)
       currentChatRef.current = newChat // update the ref as well
       targetChat = newChat
+      isFirstMassage = true
     }
 
     const userMessage: Message = {
@@ -295,7 +301,7 @@ export default function Main() {
 
     try {
 
-      const lastThreePairs = currentChat.messages.slice(-6); // Last 6 messages = 3 pairs
+      const lastThreePairs = targetChat.messages.slice(-6); // Last 6 messages = 3 pairs
       const previousChatPairs = [];
 
       for (let i = 0; i < lastThreePairs.length; i += 2) {
@@ -303,9 +309,9 @@ export default function Main() {
         const aiMsg = lastThreePairs[i + 1];
         previousChatPairs.push({ user: userMsg.content, ai: aiMsg.content });
       }
-      
-      const reply = await getAiResponse(finalMessage, previousChatPairs)
-      
+    
+      const { reply, title } = await getAiResponse(finalMessage, previousChatPairs, isFirstMassage);
+
       const newAiMessage: Message = {
         id: Date.now(),
         content: reply,
@@ -313,9 +319,16 @@ export default function Main() {
       }
 
       // Add AI response to the chat
-      const chatWithAiResponse = {
+      let chatWithAiResponse = {
         ...updatedChat,
         messages: [...updatedChat.messages.slice(0, -1), newAiMessage],
+      }
+
+      if (isFirstMassage && title && title.toLowerCase() !== "none") {
+        chatWithAiResponse = {
+          ...chatWithAiResponse,
+          title: title,
+        }
       }
 
       setChats((prevChats) => prevChats.map((chat) => (chat.id === targetChat.id ? chatWithAiResponse : chat)))
@@ -324,6 +337,7 @@ export default function Main() {
       if (isToSpeak) {
         speakText(reply)
       }
+      
     } catch (error) {
       console.error("Error fetching AI response:", error)
       // Rollback the user message on error
@@ -417,6 +431,19 @@ export default function Main() {
     if (!listening && !isSpeaking) startListening()
   }
 
+  const toggleIsStarted = (chatId: string) => {
+    setChats(prev =>
+      prev.map(chat =>
+        chat.id === chatId ? { ...chat, isStarted: !chat.isStarted } : chat
+      )
+    )
+  }
+  
+  const filteredChats = chats.filter((chat) => {
+    if (filter === "starred") return chat.isStarted;
+    return true;
+  });
+
   // Check for browser support
   useEffect(() => {
     if (!browserSupportsSpeechRecognition) {
@@ -472,53 +499,82 @@ export default function Main() {
       {/* Sidebar */}
       <div className="w-70 border-r bg-card flex flex-col">
         {/* New Chat Button */}
-        <div className="p-4">
-          <Button className="w-full justify-start gap-2" variant="outline" onClick={createNewChat}>
+        <div className="p-4 flex items-center gap-2">
+          <Button className="flex-1 justify-start gap-2" variant="outline" onClick={createNewChat}>
             <Plus className="w-4 h-4" />
             New chat
           </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="text-sm">
+                {filter === "all" ? "Show All" : "Starred Only"}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setFilter("all")}>
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Show All
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFilter("starred")}>
+                <MessageSquare className="w-4 h-4 text-yellow-500 mr-2" />
+                Starred Only
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Chat History */}
         <ScrollArea className="flex-1 px-2">
           <div className="space-y-2 p-2">
-            {chats.map((chat) => (
-              <div key={chat.id} className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  className={`w-full justify-start gap-2 h-auto py-3 px-3 font-normal hover:bg-muted ${
-                    currentChat?.id === chat.id ? "bg-muted" : ""
-                  }`}
-                  onClick={() => setCurrentChat(chat)}
+          {filteredChats.map((chat) => (
+            <div key={chat.id} className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                className={`w-full justify-start gap-2 h-auto py-3 px-3 font-normal hover:bg-muted ${
+                  currentChat?.id === chat.id ? "bg-muted" : ""
+                }`}
+                onClick={() => setCurrentChat(chat)}
+              >
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleIsStarted(chat.id)
+                  }}
                 >
-                  <MessageSquare className="w-4 h-4 shrink-0" />
-                  {isEditing === chat.id ? (
-                    <Input
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      onBlur={saveRenamedChat}
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter") saveRenamedChat()
-                      }}
-                      className="w-full"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-start gap-1 overflow-hidden">
-                      <div className="w-full truncate text-sm">{chat.title}</div>
-                      <div className="w-full truncate text-xs text-muted-foreground">
-                        {chat.messages[chat.messages.length - 1]?.content.substring(0, 30) || "No messages yet"}
-                      </div>
+                  <MessageSquare
+                    className={`w-4 h-4 shrink-0 ${chat.isStarted ? "text-yellow-500" : ""}`}
+                  />
+                </span>
+
+                {isEditing === chat.id ? (
+                  <Input
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    onBlur={saveRenamedChat}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") saveRenamedChat()
+                    }}
+                    className="w-full"
+                  />
+                ) : (
+                  <div className="flex flex-col items-start gap-1 overflow-hidden">
+                    <div className="w-full truncate text-sm">{chat.title}</div>
+                    <div className="w-full truncate text-xs text-muted-foreground">
+                    {chat.messages.length > 0 && chat.messages[chat.messages.length - 1]?.content? chat.messages[chat.messages.length - 1].content.substring(0, 16): "No messages yet"}
+
                     </div>
-                  )}
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleRenameChat(chat.id)}>
-                  <Edit2 className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => deleteChat(chat.id)}>
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
+                  </div>
+                )}
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => handleRenameChat(chat.id)}>
+                <Edit2 className="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => deleteChat(chat.id)}>
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
           </div>
         </ScrollArea>
 

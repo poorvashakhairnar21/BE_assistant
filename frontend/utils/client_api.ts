@@ -32,11 +32,11 @@ waitForApiUrl().then((apiUrl) => {
   console.log("Using API:", apiUrl);
 });
 
-export async function getAiResponse(message: string, previousChat: string): Promise<string> {
+export async function getAiResponse(message: string, previousChat: string, isFirstMassage: bool): Promise<string> {
     try {
-        const response = await axios.post(`${PYTHON_API_URL}/chat`, { message, previousChat });
+        const response = await axios.post(`${PYTHON_API_URL}/chat`, { message, previousChat, isFirstMassage });
 
-        return response.data.reply; 
+        return response.data; 
     } catch (error) {
         console.error("Error fetching AI response:", error);
         throw new Error("Failed to fetch AI response");
