@@ -83,6 +83,46 @@ export async function changePassword(currentPassword: string, newPassword: strin
   }
 }
 
+export async function resendOTP(email: string): Promise<void> {
+  try {
+    await axios.post(`${BACKEND_API_URL}/resend-otp`, { email })
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.error)
+    }
+    throw new Error("Failed to resend OTP. Please try again later.")
+  }
+}
+
+// Request password reset
+export async function requestPasswordReset(email: string): Promise<void> {
+  try {
+    await axios.post(`${BACKEND_API_URL}/request-password-reset`, { email })
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.status === 404) {
+        throw new Error("User not found")
+      }
+      throw new Error(error.response.data.error)
+    }
+    throw new Error("Failed to request password reset. Please try again later.")
+  }
+}
+
+// Reset password with OTP
+export async function resetPassword(email: string, otp: string, newPassword: string): Promise<void> {
+  try {
+    await axios.post(`${BACKEND_API_URL}/reset-password`, { email, otp, newPassword })
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      if ([400, 404].includes(error.response.status)) {
+        throw new Error(error.response.data.error)
+      }
+      throw new Error(error.response.data.error)
+    }
+    throw new Error("Failed to reset password. Please try again later.")
+  }
+}
 
 // Verify token with backend
 export async function validateToken(): Promise<string | null> {
