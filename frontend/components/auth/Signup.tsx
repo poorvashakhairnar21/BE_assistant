@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { signup, verifyOTP, resendOTP } from "@/utils/api"
 import { Eye, EyeOff } from "lucide-react"
+import {validatePassword, validateEmail} from "@/components/auth/validations"
 
 interface SignupProps {
   onSignup: (email: string, token: string) => void
@@ -50,12 +51,27 @@ export function Signup({ onSignup, onSwitchToLogin }: SignupProps) {
     setLoading(true) // Set loading state
     setShowPassword(false)
 
+    const emailError = validateEmail(email)
+    if (emailError) {
+      setError(emailError)
+      setLoading(false)
+      return
+    }
+
     if (!isOtpSent) {
       if (password !== confirmPassword) {
         setError("Password and Confirm Password do not match")
         setLoading(false)
         return
       }
+
+      const passwordError = validatePassword(password)
+      if (passwordError) {
+        setError(passwordError)
+        setLoading(false)
+        return
+      }
+
       try {
         await signup(email, password)
         setIsOtpSent(true)

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Eye, EyeOff } from "lucide-react"
 import { requestPasswordReset, verifyOTP, resendOTP, resetPassword } from "@/utils/api"
+import {validatePassword, validateEmail} from "@/components/auth/validations"
 
 interface LoginProps {
   onLogin: (email: string, password: string) => Promise<void>
@@ -54,6 +55,13 @@ export function Login({ onLogin, onSwitchToSignup }: LoginProps) {
     setLoading(true)
     setMassage(null)
 
+    const emailError = validateEmail(email)
+    if (emailError) {
+      setError(emailError)
+      setLoading(false)
+      return
+    }
+    
     try {
       if (forgotPasswordMode) {
         if (!isOtpSent) {
@@ -73,8 +81,9 @@ export function Login({ onLogin, onSwitchToSignup }: LoginProps) {
             return
           }
 
-          if (newPassword.length < 6) {
-            setError("Password must be at least 6 characters long")
+          const passwordError = validatePassword(newPassword)
+          if (passwordError) {
+            setError(passwordError)
             setLoading(false)
             return
           }
